@@ -1,6 +1,5 @@
+import type BoardListItem from "./interface/board-list-item.interface";
+import type FavoriteListItem from "./interface/favorite-list-item.interface";
+import type CommentListItem from "./interface/comment-list-item.interface";
 
-import BoardListItem from "./interface/board-list-item.interface";
-import FavoriteListItem from "./interface/favorite-list-item.interface";
-import CommentListItem from "./interface/comment-list-item.interface";
-
-export { BoardListItem, FavoriteListItem, CommentListItem };
+export type { BoardListItem, FavoriteListItem, CommentListItem };

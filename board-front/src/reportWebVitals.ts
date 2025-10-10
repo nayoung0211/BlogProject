@@ -1,13 +1,14 @@
-import { ReportHandler } from 'web-vitals';
+// @ts-ignore
+import type { ReportHandler } from 'web-vitals';
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(onPerfEntry);
-      getFID(onPerfEntry);
-      getFCP(onPerfEntry);
-      getLCP(onPerfEntry);
-      getTTFB(onPerfEntry);
+  if (onPerfEntry && typeof onPerfEntry === 'function') {
+    import('web-vitals').then((wv: any) => {
+      wv.getCLS(onPerfEntry);
+      wv.getFID(onPerfEntry);
+      wv.getFCP(onPerfEntry);
+      wv.getLCP(onPerfEntry);
+      if (wv.getTTFB) wv.getTTFB(onPerfEntry); // 존재하면 호출
     });
   }
 };

@@ -1,25 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import BoardItem from "./components/BoardItem";
+import latestBoardListMock from "./mocks/latest-board-list.mock";
+import type BoardListItemType from './types/interface/board-list-item.interface';
+import Top3Item from "./components/Top3Item";
+import {top3BoardListMock} from "./mocks";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <>
+        <div style={{display: 'flex', justifyContent: 'center',gap: '10px'}}>
+          {top3BoardListMock.map(top3ListItem =><Top3Item top3ListItem={top3ListItem} />)}
+        </div>
+      </>
   );
 }
 
