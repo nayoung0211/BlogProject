@@ -22,7 +22,7 @@ export default function Top3Item({top3ListItem}: Props) {
   }
   //컴포넌트 렌더링
   return (
-      <div className='top-3-list-item' style={{backgroundImage : `url(${boardTitleImage}})`}} onClick={onClick}>
+      <div className='top-3-list-item' style={{backgroundImage : `url(${boardTitleImage})`}} onClick={onClick}>
         <div className='top-3-list-item-main-box'>
           <div className='top-3-list-item-top'>
             <div className='top-3-list-item-profile-box'>
