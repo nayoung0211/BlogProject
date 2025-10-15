@@ -9,7 +9,7 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
     <React.StrictMode>
-      <BrowserRouter> {/* 여기서 App 전체를 감쌉니다 */}
+      <BrowserRouter>
         <App />
       </BrowserRouter>
     </React.StrictMode>
