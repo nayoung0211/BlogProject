@@ -1,3 +1,48 @@
+.black-button{
+  border-radius: 46px;
+  width: 95px;
+  height: 30px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #ff4f79;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+
+  cursor: pointer;
+}
+.black-button:hover{
+  background-color: #ff89a2;
+}
+.white-button{
+  border : 1px solid #ff4f79;
+  border-radius: 46px;
+  width: 93px;
+  height: 28px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #ffd9e6;
+
+  color: #ff4f79;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+
+  cursor: pointer;
+}
+.white-button:hover{
+  background-color: #ff87a6;
+}
 .icon-box{
   width: 24px;
   height: 24px;
