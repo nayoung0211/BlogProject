@@ -1,3 +1,3 @@
-import ResponseCode from './Response.dto';
+import ResponseCode from './response.dto';
 
 export type { ResponseCode };

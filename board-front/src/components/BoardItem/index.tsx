@@ -1,4 +1,4 @@
-import React, {JSX} from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './style.css';
 import type BoardListItemType from '../../types/interface/board-list-item.interface';

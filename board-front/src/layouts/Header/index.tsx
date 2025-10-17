@@ -21,6 +21,7 @@ export default function Header() {
     const [status,setStatus] = useState<boolean>(false);
     const [word,setWord] = useState<string>('');
     const {searchWord} = useParams();
+
     const onSearchWordChange = (event: ChangeEvent<HTMLInputElement>) =>{
       const value = event.target.value;
       setWord(value);
