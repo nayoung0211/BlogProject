@@ -20,6 +20,23 @@
 .black-button:hover{
   background-color: #ff89a2;
 }
+.black-large-full-button{
+  width: 100%;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 46px;
+  background-color: #ff4f79;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+  cursor: pointer;
+}
+.black-large-full-button:hover{
+  background-color: #f39fb3;
+}
 .white-button{
   border : 1px solid #ff4f79;
   border-radius: 46px;

@@ -1,3 +1,13 @@
-import ResponseDto from "./response/response.dto";
+import {SignInRequestDto, SignUpRequestDto} from "./request/auth";
 
-export type { ResponseDto };
+const DOMAIN = 'http://localhost:4000';
+const API_DOMAIN = `${DOMAIN}/api/v1`;
+const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
+const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
+
+export const signInRequestDto = (requestBody: SignInRequestDto) =>{
+
+}
+export const signUpRequestDto = (requestBody: SignUpRequestDto) =>{
+
+}

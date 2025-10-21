@@ -97,7 +97,7 @@ export default function Header() {
             <div className='icon-box'>
               <div className='icon logo-dark-icon'></div>
             </div>
-            <div className='header-logo'>{'NaWoongBoard'}</div>
+            <div className='header-logo'>{'NaWoong Board'}</div>
           </div>
           <div className='header-right-box'>
           <SearchButton />
