@@ -1,11 +1,19 @@
-import React, {useState, KeyboardEvent, useRef} from "react";
+import React, {useState, KeyboardEvent, useRef, ChangeEvent} from "react";
 import './style.css';
 import InputBox from "../../components/InputBox";
+import {SignInRequestDto} from "../../apis/request/auth";
+import ResponseDto from "../../apis/response/response.dto";
+import {signInRequest} from "../../apis";
+import {SignInResponseDto} from "../../apis/response/auth";
+import {useCookies} from "react-cookie";
+import {MAIN_PATH} from "../../constants";
+import {useNavigate} from "react-router-dom";
 
 
 export default function Authentication() {
   const [view,setView] = useState<'sign-in' | 'sign-up'>('sign-in');
-
+  const [cookies,setCookie] = useCookies();
+  const navigator = useNavigate();
 
   const SignInCard = () =>{
     const emailRef = useRef<HTMLInputElement | null>(null);
@@ -15,8 +23,44 @@ export default function Authentication() {
     const [passwordType,setPasswordType] = useState<'text' | 'password'>('password');
     const [passwordIcon,setPasswordIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
     const [error,setError] = useState<boolean>(false);
-    const onSignInButtonClick = () =>{
 
+    const signInResponse = (responseBody: SignInRequestDto | ResponseDto | null) => {
+      if (!responseBody) {
+        alert('network error');
+        return;
+      }
+      if ('code' in responseBody) {
+        const {code} = responseBody;
+        if (code === 'DBE') alert('database error');
+        if (code === 'SF' || code === 'VF') setError(true);
+        if (code !== 'SU') return;
+      }
+      const { token, expirationTime } = responseBody as SignInResponseDto;
+      const now = new Date().getTime();
+      const expires = new Date(now + expirationTime * 1000);
+
+      setCookie('accessToken',token,{expires ,path : MAIN_PATH()});
+      navigator(MAIN_PATH());
+    }
+    const onEmailChangeHandler = (event:ChangeEvent<HTMLInputElement>) =>{
+      setError(false);
+      const value = event.target.value;
+      setEmail(value);
+    }
+    const onPasswordChangeHandler = (event:ChangeEvent<HTMLInputElement>) =>{
+      setError(false);
+      const value = event.target.value;
+      setPassword(value);
+    }
+
+
+    const onSignInButtonClick = () =>{
+      if (!email || !password) {
+        setError(true);
+        return;
+      }
+      const requestBody : SignInRequestDto = {email,password};
+      signInRequest(requestBody).then(signInResponse);
     }
     const onSignUpButtonClick = () =>{
       setView('sign-up');
@@ -49,9 +93,9 @@ export default function Authentication() {
               <div className='auth-card-title'>{'Login'}</div>
             </div>
             <InputBox ref={emailRef} label='Email' type='text' placeholder='Enter your email address' error={error}
-                      value={email} setValue={setEmail} onKeyDown={onEmailKeyDownHandler}/>
-            <InputBox ref={passwordRef} label='Password' type='password' placeholder='Enter your password' error={error}
-                      value={password} setValue={setPassword} icon={passwordIcon} onButtonClick={onPasswordButtonClickHandler} onKeyDown={onPasswordKeyDownHandler}/>
+                      value={email} onChange={onEmailChangeHandler} onKeyDown={onEmailKeyDownHandler}/>
+            <InputBox ref={passwordRef} label='Password' type={passwordType} placeholder='Enter your password' error={error}
+                      value={password} onChange={onPasswordChangeHandler} icon={passwordIcon} onButtonClick={onPasswordButtonClickHandler} onKeyDown={onPasswordKeyDownHandler}/>
           </div>
           <div className='auth-card-bottom'>
             {error &&
@@ -72,7 +116,14 @@ export default function Authentication() {
   };
   const SignUpCard = () =>{
     return (
-        <div className='auth-card'></div>
+        <div className='auth-card'>
+          <div className='auth-card-box'>
+            <div className='auth-card-top'>
+              <div className='auth-card-title-box'></div>
+            </div>
+              <div className='auth-card-bottom'></div>
+          </div>
+        </div>
     );
   };
 

@@ -1,120 +1,144 @@
+
 #auth-wrapper {
-  padding: 100px 0px 150px;
-  min-width: 1440px;
-  height: calc(100vh - 68px - 100px - 150px);
-  min-height: 960px;
+  padding: 100px 0 0 0 !important;
+  width: auto;
+  min-height: 100vh;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background-image: url(assets/hello-kitty.jpg);
-  background-position: 50% 50%;
+  justify-content: flex-start;
+
+  background-image: url(assets/hello-kitty2.jpg);
+  background-position: center top;
   background-repeat: no-repeat;
-  background-size: auto;
+  background-size: auto 100%;
+  box-sizing: border-box;
 }
 
-.auth-container {
-  width: 1200px;
-  height: 100%;
-
-  grid-template-columns: 1fr auto;
-  display: grid;
-  column-gap: 78px;
-  justify-content: end;
+#auth-container {
+  width: 100%; /* 좌우 딱 맞춤 */
+  max-width: 1200px; /* 최대 크기 제한 */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px; /* 좌우 여백 최소화 */
+  padding-bottom: 100px; /* 카드 아래 여백 확보, 배경 이미지 그대로 보임 */
 }
-.auth-jumbotron-box{
-  grid-column: 1/2;
+
+.auth-jumbotron-box {
   height: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start; /* 왼쪽 정렬 */
   align-items: center;
+  padding-left: 30px;
 }
+
 .auth-jumbotron-contents {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
 }
-.auth-logo-icon{
+
+.auth-logo-icon {
   width: 50px;
   height: 50px;
   background-image: url(assets/auth-logo.png);
   background-position: 50% 50%;
   background-size: 100% 100%;
 }
-.auth-jumbotron-text-box{
+
+.auth-jumbotron-text-box {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
 }
-.auth-jumbotron-text{
-  color: white;
+
+.auth-jumbotron-text {
+  color: #ff4f79;
   font-family: GimhaeGaya, cursive;
   font-size: 40px;
   font-weight: 400;
   line-height: 140%;
   letter-spacing: -1.2px;
-  text-align: center;
+  text-align: left;
 }
-.auth-card{
-  height: 400px;
-  grid-column: 2/3;
+
+.auth-card {
+  width: 35vw;                    /* 화면 대비 가로 */
+  max-width: 450px;
+  min-width: 350px;
+  height: auto;
+  min-height: 450px;
+  max-height: 60vh;               /* 화면 높이 대비 */
+
   border-radius: 10px;
-  padding: 50px 50px 30px;
+  padding: 50px 50px 50px;
   background-color: #ffd9e6;
   box-shadow: 0px 4px 47px 0px rgba(0, 0, 0, 0.25);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto; /* 내용 많으면 내부 스크롤 */
 }
-.auth-card-box{
+
+.auth-card-box {
   display: flex;
   flex-direction: column;
   justify-content: center;
   height: 100%;
 }
-.auth-card-top{
+
+.auth-card-top {
   display: flex;
   flex-direction: column;
   gap: 40px;
 }
-.auth-card-title-box{
+
+.auth-card-title-box {
   display: flex;
   justify-content: space-between;
-
 }
-.auth-card-title{
+
+.auth-card-title {
   font-family: GimhaeGaya, cursive;
   color: #ff4f79;
   font-size: 24px;
   font-weight: 500;
   line-height: 140%;
 }
-.auth-card-bottom{
+
+.auth-card-bottom {
   margin-top: 20px;
   display: flex;
   gap: 20px;
   flex-direction: column;
 }
-.auth-sign-in-error-box{
-  margin-bottom: -4px;
-}
-.auth-sign-in-error-message{
+
+.auth-sign-in-error-message {
   color: blue;
   font-size: 12px;
   font-weight: 400;
   line-height: 140%;
 }
-.auth-description-box{
+
+.auth-description-box {
   display: flex;
   justify-content: center;
 }
-.auth-description{
+
+.auth-description {
   color: #ff4f79;
   font-size: 14px;
   font-weight: 400;
   line-height: 140%;
 }
-.auth-description-link{
+
+.auth-description-link {
   color: #ff4f79;
   cursor: pointer;
   font-weight: 700;

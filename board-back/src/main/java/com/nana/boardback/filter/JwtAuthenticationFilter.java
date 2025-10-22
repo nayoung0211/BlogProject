@@ -12,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -22,49 +21,60 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider  jwtProvider;
-
+    private final JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
+
         try {
+            String path = request.getServletPath();
+
+
+            if (path.startsWith("/api/v1/auth")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 🔹 토큰 추출
             String token = parseBearerToken(request);
-            if(token == null){
-                filterChain.doFilter(request,response);
+            if (token == null) {
+                filterChain.doFilter(request, response);
                 return;
             }
+
+            // 🔹 토큰 유효성 검사
             String email = jwtProvider.validate(token);
-
-            if(email == null){
-                filterChain.doFilter(request,response);
+            if (email == null) {
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            AbstractAuthenticationToken abstractAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(email,null, AuthorityUtils.NO_AUTHORITIES);
+            // 🔹 인증 객체 생성 및 SecurityContext에 저장
+            AbstractAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(email, null, AuthorityUtils.NO_AUTHORITIES);
 
-            abstractAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            securityContext.setAuthentication(abstractAuthenticationToken);
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authenticationToken);
+            SecurityContextHolder.setContext(context);
 
-            SecurityContextHolder.setContext(securityContext);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        filterChain.doFilter(request,response);
+
+        filterChain.doFilter(request, response);
     }
 
-    private String parseBearerToken(HttpServletRequest request){
+    private String parseBearerToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         boolean hasAuthorization = StringUtils.hasText(authorization);
-        if(!hasAuthorization) return null;
+        if (!hasAuthorization) return null;
 
         boolean isBearer = authorization.startsWith("Bearer ");
-        if(!isBearer) return null;
+        if (!isBearer) return null;
 
-        String token = authorization.substring(7);
-        return token;
+        return authorization.substring(7);
     }
 }
