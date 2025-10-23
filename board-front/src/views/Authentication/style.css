@@ -69,9 +69,8 @@
 
 .auth-card {
   width: 450px;
-  height: 500px;
-  min-height: 450px;
-  max-height: 60vh;
+  min-height: 400px;
+  height: auto;
 
   border-radius: 10px;
   padding: 50px 50px 50px;
@@ -81,7 +80,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow-y: auto; /* 내용 많으면 내부 스크롤 */
+  overflow-y: visible;
 }
 
 .auth-card-box {
@@ -140,4 +139,11 @@
   color: #ff4f79;
   cursor: pointer;
   font-weight: 700;
+}
+.auth-card-page{
+  font-family: GimhaeGaya, cursive;
+  color: #f86689;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 140%;
 }

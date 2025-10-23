@@ -107,7 +107,7 @@ export default function Authentication() {
             </div>}
             <div className='black-large-full-button' onClick={onSignInButtonClick}>{'Login'}</div>
             <div className='auth-description-box'>
-              <div className='auth-description'>{"Don't have an account yet?"}<span className='auth-description-link' onClick={onSignUpButtonClick}>{'Sign Up'}</span></div>
+              <div className='auth-description'>{"Don't have an account yet? "}<span className='auth-description-link' onClick={onSignUpButtonClick}>{'Sign Up'}</span></div>
             </div>
           </div>
         </div>
@@ -119,9 +119,14 @@ export default function Authentication() {
     const emailRef = useRef<HTMLInputElement | null>(null);
     const passwordRef = useRef<HTMLInputElement | null>(null);
     const passwordCheckRef = useRef<HTMLInputElement | null>(null);
+    const nicknameRef = useRef<HTMLInputElement | null>(null);
+    const telNumberRef = useRef<HTMLInputElement | null>(null);
+    const addressRef = useRef<HTMLInputElement | null>(null);
+    const addressDetailRef = useRef<HTMLInputElement | null>(null);
 
 
-    const [page,setPage] = useState<1|2>(1);
+
+    const [page,setPage] = useState<1|2>(2);
     const [email,setEmail] = useState<string>('');
     const [password,setPassword] = useState<string>('');
     const [passwordCheck,setPasswordCheck] = useState<string>('');
@@ -135,6 +140,21 @@ export default function Authentication() {
     const [passwordCheckErrorMessage,setPasswordCheckErrorMessage] = useState<string>('');
     const [passwordIcon,setPasswordIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
     const [passwordCheckButtonIcon,setPasswordCheckButtonIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
+    const [nickname,setNickname] = useState<string>('');
+    const [telNumber,setTelNumber] = useState<string>('');
+    const [address,setAddress] = useState<string>('');
+    const [addressDetail,setAddressDetail] = useState<string>('');
+    const [isNicknameError,setNicknameError] = useState<boolean>(false);
+    const [isTelNumberError,setTelNumberError] = useState<boolean>(false);
+    const [isAddressError,seAddressError] = useState<boolean>(false);
+    const [nicknameErrorMessage,setNicknameErrorMessage] = useState<string>('');
+    const [telNumberErrorMessage,setTelNumberErrorMessage] = useState<string>('');
+    const [addressErrorMessage,setAddressErrorMessage] = useState<string>('');
+
+
+
+
+
 
     const onEmailChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
@@ -148,6 +168,26 @@ export default function Authentication() {
       const {value} = event.target;
       setPasswordCheck(value);
     }
+    const onNicknameChange = (event:ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setNickname(value);
+    }
+    const onTelNumberChange = (event:ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setTelNumber(value);
+    }
+    const onAddressChange = (event:ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setAddress(value);
+    }
+    const onAddressDetailChange = (event:ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setAddressDetail(value);
+    }
+
+
+
+
     const onPasswordButtonClick = () =>{
       if(passwordIcon === 'eye-light-off-icon'){
         setPasswordIcon('eye-light-on-icon');
@@ -202,6 +242,28 @@ export default function Authentication() {
     }
 
 
+    const onSignInLinkClick = () =>{
+      setView('sign-in');
+    }
+
+    const onSignUpButtonClick = () =>{
+
+    }
+    const onAddressButtonClick = () =>{
+
+    }
+    const onNicknameKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
+      if(event.key !== 'Enter') return;
+    }
+    const onTelNumberKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
+      if(event.key !== 'Enter') return;
+    }
+    const onAddressKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
+      if(event.key !== 'Enter') return;
+    }
+    const onAddressDetailKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
+      if(event.key !== 'Enter') return;
+    }
     return (
         <div className='auth-card'>
           <div className='auth-card-box'>
@@ -210,18 +272,57 @@ export default function Authentication() {
                 <div className='auth-card-title'>{'Sign Up'}</div>
                 <div className='auth-card-page'>{`${page}/2`}</div>
               </div>
-              <InputBox ref={emailRef} label='Email address' type='text' placeholder='Enter the email'
-                        value={email} onChange={onEmailChange} error={isEmailError} message={emailErrorMessage} onKeyDown={onEmailKeyDown}/>
-              <InputBox ref={passwordRef} label='Password' type={passwordType} placeholder='Enter the password'
-                        value={password} onChange={onPasswordChange} error={isPasswordError} message={passwordErrorMessage} icon={passwordIcon} onButtonClick={onPasswordButtonClick} onKeyDown={onPasswordKeyDown}/>
-              <InputBox ref={passwordCheckRef} label='Password Check' type={passwordCheckType}
-                        placeholder='Enter the password again' value={passwordCheck} onChange={onPasswordCheckChange}
-                        error={isPasswordCheckError} message={passwordCheckErrorMessage} icon={passwordCheckButtonIcon} onButtonClick={onPasswordCheckButtonClick} onKeyDown={onPasswordCheckKeyDown}/>
+              {page===1 &&(
+                  <>
+                    <InputBox ref={emailRef} label='Email address' type='text' placeholder='Enter the email'
+                              value={email} onChange={onEmailChange} error={isEmailError} message={emailErrorMessage}
+                              onKeyDown={onEmailKeyDown}/>
+                    <InputBox ref={passwordRef} label='Password' type={passwordType} placeholder='Enter the password'
+                              value={password} onChange={onPasswordChange} error={isPasswordError}
+                              message={passwordErrorMessage} icon={passwordIcon} onButtonClick={onPasswordButtonClick}
+                              onKeyDown={onPasswordKeyDown}/>
+                    <InputBox ref={passwordCheckRef} label='Password Check' type={passwordCheckType}
+                              placeholder='Enter the password again' value={passwordCheck} onChange={onPasswordCheckChange}
+                              error={isPasswordCheckError} message={passwordCheckErrorMessage}
+                              icon={passwordCheckButtonIcon} onButtonClick={onPasswordCheckButtonClick}
+                              onKeyDown={onPasswordCheckKeyDown}/>
+                  </>
+              )}
+              {page===2 &&(
+                  <>
+                    <InputBox ref={nicknameRef} label='nickname' type='text' placeholder='Enter the nickname'
+                              value={nickname} onChange={onNicknameChange} error={isNicknameError} message={nicknameErrorMessage}
+                    onKeyDown={onNicknameKeyDown}/>
+                    <InputBox ref={telNumberRef} label='tel number' type='text' placeholder='Enter the tel number'
+                              value={telNumber} onChange={onTelNumberChange} error={isTelNumberError} message={telNumberErrorMessage}
+                    onKeyDown={onTelNumberKeyDown}/>
+                    <InputBox ref={addressRef} label='address' type='text' placeholder='Search the address'
+                              value={address} onChange={onAddressChange} error={isAddressError} message={addressErrorMessage}
+                              icon='expand-right-light-icon' onButtonClick={onAddressButtonClick}
+                    onKeyDown={onAddressKeyDown}/>
+                    <InputBox ref={addressDetailRef} label='address detail' type='text' placeholder='Enter the address detail'
+                              value={addressDetail} onChange={onAddressDetailChange} error={false} onKeyDown={onAddressDetailKeyDown}/>
+                  </>
+              )}
             </div>
               <div className='auth-card-bottom'>
-                <div className='black-large-full-button' onClick={onNextButtonClick}>{'Next'}</div>
+                {page===1 &&(
+                    <div className='black-large-full-button' onClick={onNextButtonClick}>{'Next'}</div>
+                )}
+                {page===2 &&(
+                    <>
+                      <div className='auth-consent-box'>
+                        <div className='auth-check-box'>
+                          <div className='check-ring-light-icon'></div>
+                        </div>
+                        <div className='auth-consent-title'>{'Consent to Personal Information'}</div>
+                        <div className='auth-consent-link'>{'More > '}</div>
+                      </div>
+                      <div className='black-large-full-button' onClick={onSignUpButtonClick}>{'Sign Up'}</div>
+                    </>
+                )}
                 <div className='auth-description-box'>
-                  <div className='auth-description'>{'Already have an account?'}<span className='auth-description-lick'>{'Login'}</span></div>
+                  <div className='auth-description'>{'Already have an account? '}<span className='auth-description-link' onClick={onSignInLinkClick}>{'Login'}</span></div>
                 </div>
               </div>
           </div>
