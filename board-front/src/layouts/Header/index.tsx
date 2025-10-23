@@ -54,7 +54,7 @@ export default function Header() {
 
     return (
         <div className='header-search-input-box'>
-          <input className='header-search-input' type='text' placeholder='검색어를 입력해주세요.'
+          <input className='header-search-input' type='text' placeholder='Enter a keyword.'
                  value={word} onChange={onSearchWordChange} onKeyDown={onSearchWordKeyDownHandler}/>
           <div ref={searchButtonRef} className='icon-button' onClick={onSearchButtonClickHandler}>
             <div className='icon search-light-icon'></div>

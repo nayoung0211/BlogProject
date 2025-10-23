@@ -115,13 +115,115 @@ export default function Authentication() {
     );
   };
   const SignUpCard = () =>{
+
+    const emailRef = useRef<HTMLInputElement | null>(null);
+    const passwordRef = useRef<HTMLInputElement | null>(null);
+    const passwordCheckRef = useRef<HTMLInputElement | null>(null);
+
+
+    const [page,setPage] = useState<1|2>(1);
+    const [email,setEmail] = useState<string>('');
+    const [password,setPassword] = useState<string>('');
+    const [passwordCheck,setPasswordCheck] = useState<string>('');
+    const [passwordType,setPasswordType] = useState<'text'|'password'>('password');
+    const [passwordCheckType,setPasswordCheckType] = useState<'text'|'password'>('password');
+    const [isEmailError,setEmailError] = useState<boolean>(false);
+    const [isPasswordError,setPasswordError] = useState<boolean>(false);
+    const [isPasswordCheckError,setPasswordCheckError] = useState<boolean>(false);
+    const [emailErrorMessage,setEmailErrorMessage] = useState<string>('');
+    const [passwordErrorMessage,setPasswordErrorMessage] = useState<string>('');
+    const [passwordCheckErrorMessage,setPasswordCheckErrorMessage] = useState<string>('');
+    const [passwordIcon,setPasswordIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
+    const [passwordCheckButtonIcon,setPasswordCheckButtonIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
+
+    const onEmailChange = (event:ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setEmail(value);
+    }
+    const onPasswordChange = (event:ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setPassword(value);
+    }
+    const onPasswordCheckChange = (event:ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setPasswordCheck(value);
+    }
+    const onPasswordButtonClick = () =>{
+      if(passwordIcon === 'eye-light-off-icon'){
+        setPasswordIcon('eye-light-on-icon');
+        setPasswordType('text');
+      }else{
+        setPasswordIcon('eye-light-off-icon');
+        setPasswordType('password');
+      }
+    }
+    const onPasswordCheckButtonClick = () =>{
+      if(passwordIcon === 'eye-light-off-icon'){
+        setPasswordIcon('eye-light-on-icon');
+        setPasswordType('text');
+      }else{
+        setPasswordIcon('eye-light-off-icon');
+        setPasswordType('password');
+      }
+    }
+    const onEmailKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
+      if(event.key !== 'Enter') return;
+      if(!passwordRef.current) return;
+      passwordRef.current.focus();
+    }
+    const onPasswordKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
+      if(event.key !== 'Enter') return;
+      if(!passwordCheckRef.current) return;
+      passwordCheckRef.current.focus();
+    }
+    const onPasswordCheckKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
+      if(event.key !== 'Enter') return;
+      onNextButtonClick();
+    }
+    const onNextButtonClick = () =>{
+      const emailPattern = /^[a-zA-z0-9]*@([-.]?[a-zA-z0-9])*\.[a-zA-Z]{2,4}$/;
+      const isEmailPattern = emailPattern.test(email);
+      if(!isEmailPattern){
+        setEmailError(true);
+        setEmailErrorMessage('Please enter a valid email address');
+      }
+      const isCheckPassword = password.trim().length >= 8;
+      if(!isCheckPassword){
+        setPasswordError(true);
+        setPasswordErrorMessage('Please enter a password of at least 8 characters.');
+      }
+      const isEqualPassword = password === passwordCheck;
+      if(!isEqualPassword){
+        setPasswordCheckError(true);
+        setPasswordCheckErrorMessage('Passwords do not match.');
+      }
+      if(!isEqualPassword || !isEmailPattern || !isCheckPassword) return;
+      setPage(2);
+    }
+
+
     return (
         <div className='auth-card'>
           <div className='auth-card-box'>
             <div className='auth-card-top'>
-              <div className='auth-card-title-box'></div>
+              <div className='auth-card-title-box'>
+                <div className='auth-card-title'>{'Sign Up'}</div>
+                <div className='auth-card-page'>{`${page}/2`}</div>
+              </div>
+              <InputBox ref={emailRef} label='Email address' type='text' placeholder='Enter the email'
+                        value={email} onChange={onEmailChange} error={isEmailError} message={emailErrorMessage} onKeyDown={onEmailKeyDown}/>
+              <InputBox ref={passwordRef} label='Password' type={passwordType} placeholder='Enter the password'
+                        value={password} onChange={onPasswordChange} error={isPasswordError} message={passwordErrorMessage} icon={passwordIcon} onButtonClick={onPasswordButtonClick} onKeyDown={onPasswordKeyDown}/>
+              <InputBox ref={passwordCheckRef} label='Password Check' type={passwordCheckType}
+                        placeholder='Enter the password again' value={passwordCheck} onChange={onPasswordCheckChange}
+                        error={isPasswordCheckError} message={passwordCheckErrorMessage} icon={passwordCheckButtonIcon} onButtonClick={onPasswordCheckButtonClick} onKeyDown={onPasswordCheckKeyDown}/>
             </div>
-              <div className='auth-card-bottom'></div>
+              <div className='auth-card-bottom'>
+                <div className='black-large-full-button' onClick={onNextButtonClick}>{'Next'}</div>
+                <div className='auth-description-box'>
+                  <div className='auth-description'>{'Already have an account?'}<span className='auth-description-lick'>{'Login'}</span></div>
+                </div>
+              </div>
           </div>
         </div>
     );
@@ -134,8 +236,8 @@ export default function Authentication() {
             <div className='auth-jumbotron-contents'>
               <div className='auth-logo-icon'></div>
               <div className='auth-jumbotron-text-box'>
-                <div className='auth-jumbotron-text'>{`환영합니다.`}</div>
-                <div className='auth-jumbotron-text'>{`NaWoong Board입니다.`}</div>
+                <div className='auth-jumbotron-text'>{`Welcome.`}</div>
+                <div className='auth-jumbotron-text'>{`This is NaWoong Board.`}</div>
               </div>
             </div>
           </div>

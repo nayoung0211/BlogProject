@@ -68,12 +68,10 @@
 }
 
 .auth-card {
-  width: 35vw;                    /* 화면 대비 가로 */
-  max-width: 450px;
-  min-width: 350px;
-  height: auto;
+  width: 450px;
+  height: 500px;
   min-height: 450px;
-  max-height: 60vh;               /* 화면 높이 대비 */
+  max-height: 60vh;
 
   border-radius: 10px;
   padding: 50px 50px 50px;
