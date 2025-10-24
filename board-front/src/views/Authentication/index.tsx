@@ -1,13 +1,14 @@
-import React, {useState, KeyboardEvent, useRef, ChangeEvent} from "react";
+import React, {useState, KeyboardEvent, useRef, ChangeEvent, useEffect} from "react";
 import './style.css';
 import InputBox from "../../components/InputBox";
-import {SignInRequestDto} from "../../apis/request/auth";
+import {SignInRequestDto, SignUpRequestDto} from "../../apis/request/auth";
 import ResponseDto from "../../apis/response/response.dto";
-import {signInRequest} from "../../apis";
-import {SignInResponseDto} from "../../apis/response/auth";
+import {signInRequest, signUpRequest} from "../../apis";
+import {SignInResponseDto, SignUpResponseDto} from "../../apis/response/auth";
 import {useCookies} from "react-cookie";
 import {MAIN_PATH} from "../../constants";
 import {useNavigate} from "react-router-dom";
+import {Address, useDaumPostcodePopup} from "react-daum-postcode";
 
 
 export default function Authentication() {
@@ -126,7 +127,7 @@ export default function Authentication() {
 
 
 
-    const [page,setPage] = useState<1|2>(2);
+    const [page,setPage] = useState<1|2>(1);
     const [email,setEmail] = useState<string>('');
     const [password,setPassword] = useState<string>('');
     const [passwordCheck,setPasswordCheck] = useState<string>('');
@@ -146,39 +147,82 @@ export default function Authentication() {
     const [addressDetail,setAddressDetail] = useState<string>('');
     const [isNicknameError,setNicknameError] = useState<boolean>(false);
     const [isTelNumberError,setTelNumberError] = useState<boolean>(false);
-    const [isAddressError,seAddressError] = useState<boolean>(false);
+    const [isAddressError,setAddressError] = useState<boolean>(false);
     const [nicknameErrorMessage,setNicknameErrorMessage] = useState<string>('');
     const [telNumberErrorMessage,setTelNumberErrorMessage] = useState<string>('');
     const [addressErrorMessage,setAddressErrorMessage] = useState<string>('');
+    const [agreedPersonal,setAgreedPersonal] = useState<boolean>(false);
+    const [isAgreedError,setAgreedError] = useState<boolean>(false);
 
+    //다음 주소 검색 팝업 오픈 함수
+    const open = useDaumPostcodePopup();
 
-
-
+    const signUpResponse = (responseBody: SignUpResponseDto | ResponseDto | null) => {
+      if(!responseBody) {
+        alert('Network error');
+        return;
+      }
+      const {code} = responseBody;
+      if(code === 'DE'){
+        setEmailError(true);
+        setEmailErrorMessage('Duplicated Email')
+      }
+      if(code === 'DN'){
+        setNicknameError(true);
+        setNicknameErrorMessage('Duplicated Nickname')
+      }
+      if(code === 'DT'){
+        setTelNumberError(true);
+        setTelNumberErrorMessage('Duplicated TelNumber')
+      }
+      if(code === 'VF'){
+        alert('Enter everthing')
+      }
+      if(code === 'DBE'){
+        alert('Database Error')
+      }
+      if(code !== 'SU'){
+        return;
+      }
+      setView('sign-in');
+    }
 
 
     const onEmailChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
       setEmail(value);
+      setEmailError(false);
+      setEmailErrorMessage('');
     }
     const onPasswordChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
       setPassword(value);
+      setPasswordError(false);
+      setEmailErrorMessage('');
     }
     const onPasswordCheckChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
       setPasswordCheck(value);
+      setPasswordCheckError(false);
+      setPasswordCheckErrorMessage('');
     }
     const onNicknameChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
       setNickname(value);
+      setNicknameError(false);
+      setNicknameErrorMessage('');
     }
     const onTelNumberChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
       setTelNumber(value);
+      setTelNumberError(false);
+      setTelNumberErrorMessage('');
     }
     const onAddressChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
       setAddress(value);
+      setAddressError(false);
+      setAddressErrorMessage('');
     }
     const onAddressDetailChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
@@ -198,12 +242,12 @@ export default function Authentication() {
       }
     }
     const onPasswordCheckButtonClick = () =>{
-      if(passwordIcon === 'eye-light-off-icon'){
-        setPasswordIcon('eye-light-on-icon');
-        setPasswordType('text');
-      }else{
-        setPasswordIcon('eye-light-off-icon');
-        setPasswordType('password');
+      if(passwordCheckButtonIcon === 'eye-light-off-icon'){
+        setPasswordCheckButtonIcon('eye-light-on-icon');
+        setPasswordCheckType('text')
+      }else {
+        setPasswordCheckButtonIcon('eye-light-off-icon');
+        setPasswordCheckType('password');
       }
     }
     const onEmailKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
@@ -218,10 +262,12 @@ export default function Authentication() {
     }
     const onPasswordCheckKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
       if(event.key !== 'Enter') return;
+      //if(!nicknameRef.current) return;
       onNextButtonClick();
+      //nicknameRef.current.focus();
     }
     const onNextButtonClick = () =>{
-      const emailPattern = /^[a-zA-z0-9]*@([-.]?[a-zA-z0-9])*\.[a-zA-Z]{2,4}$/;
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       const isEmailPattern = emailPattern.test(email);
       if(!isEmailPattern){
         setEmailError(true);
@@ -247,23 +293,93 @@ export default function Authentication() {
     }
 
     const onSignUpButtonClick = () =>{
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const isEmailPattern = emailPattern.test(email);
+      if(!isEmailPattern){
+        setEmailError(true);
+        setEmailErrorMessage('Please enter a valid email address');
+      }
+      const isCheckPassword = password.trim().length >= 8;
+      if(!isCheckPassword){
+        setPasswordError(true);
+        setPasswordErrorMessage('Please enter a password of at least 8 characters.');
+      }
+      const isEqualPassword = password === passwordCheck;
+      if(!isEqualPassword){
+        setPasswordCheckError(true);
+        setPasswordCheckErrorMessage('Passwords do not match.');
+      }
+      if(!isEqualPassword || !isEmailPattern || !isCheckPassword) {
+        setPage(1);
+        return;
+      }
+      const hasNickname = nickname.trim().length !== 0;
+      if(!hasNickname){
+        setNicknameError(true);
+        setNicknameErrorMessage('Please enter a valid nickname');
+      }
+      const telNumberPattern = /^[0-9]{11,13}$/;
+      const isTelNumberPattern = telNumberPattern.test(telNumber);
+      if(!isTelNumberPattern){
+        setTelNumberError(true);
+        setTelNumberErrorMessage('Please enter a valid tel number');
+      }
+      const hasAddress = address.trim().length !== 0;
+      if(!hasAddress){
+        setAddressError(true);
+        setAddressErrorMessage('Please enter a valid address');
+      }
+      if(!agreedPersonal){
+        setAgreedError(true);
+      }
+      if(!hasNickname || !isTelNumberPattern || !agreedPersonal) return;
 
+      const requestBody:SignUpRequestDto = {
+        email,password,nickname,telNumber,address,addressDetail,agreedPersonal
+      };
+      signUpRequest(requestBody).then(signUpResponse);
     }
     const onAddressButtonClick = () =>{
-
+      open({onComplete});
     }
     const onNicknameKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
       if(event.key !== 'Enter') return;
+      if(!telNumberRef.current) return;
+      telNumberRef.current.focus();
     }
     const onTelNumberKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
       if(event.key !== 'Enter') return;
+      onAddressButtonClick();
     }
     const onAddressKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
       if(event.key !== 'Enter') return;
+      if(!addressDetailRef.current) return;
+        addressDetailRef.current.focus();
     }
     const onAddressDetailKeyDown = (event:KeyboardEvent<HTMLInputElement>) =>{
       if(event.key !== 'Enter') return;
+      onSignUpButtonClick();
     }
+    const onComplete = (data:Address) =>{
+      const {address} = data;
+      setAddress(address);
+      setAddressError(false);
+      setAddressErrorMessage('');
+      if(!addressDetailRef.current) return;
+      addressDetailRef.current.focus();
+    }
+
+    useEffect(() => {
+      if(page===2){
+        if(!nicknameRef.current) return;
+        nicknameRef.current.focus();
+      }
+    }, [page]);
+    const onAgreedConsentClick = () =>{
+      setAgreedPersonal(!agreedPersonal);
+      setAgreedError(false);
+    }
+
     return (
         <div className='auth-card'>
           <div className='auth-card-box'>
@@ -312,10 +428,10 @@ export default function Authentication() {
                 {page===2 &&(
                     <>
                       <div className='auth-consent-box'>
-                        <div className='auth-check-box'>
-                          <div className='check-ring-light-icon'></div>
+                        <div className='auth-check-box' onClick={onAgreedConsentClick}>
+                              <div className={`icon ${agreedPersonal ?  'check-round-fill-icon': 'check-ring-light-icon'}`}></div>
                         </div>
-                        <div className='auth-consent-title'>{'Consent to Personal Information'}</div>
+                        <div className={isAgreedError ? 'auth-consent-title-error': 'auth-consent-title'}>{'Consent to Personal Information'}</div>
                         <div className='auth-consent-link'>{'More > '}</div>
                       </div>
                       <div className='black-large-full-button' onClick={onSignUpButtonClick}>{'Sign Up'}</div>
