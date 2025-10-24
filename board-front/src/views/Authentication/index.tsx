@@ -198,7 +198,7 @@ export default function Authentication() {
       const {value} = event.target;
       setPassword(value);
       setPasswordError(false);
-      setEmailErrorMessage('');
+      setPasswordErrorMessage('')
     }
     const onPasswordCheckChange = (event:ChangeEvent<HTMLInputElement>) =>{
       const {value} = event.target;
