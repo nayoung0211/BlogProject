@@ -1,4 +1,4 @@
-export const MAIN_PATH = () => '/';
+export const MAIN_PATH = (p0?: string) => '/';
 export const AUTH_PATH = () => '/auth';
 export const SEARCH_PATH = (searchWord:string) =>  `/search/${searchWord}`;
 export const USER_PATH = (userEmail: string) => `/user/${userEmail}`;

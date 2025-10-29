@@ -1,0 +1,7 @@
+#board-write-wrapper{
+  border-top: 1px solid lavender;
+  display: flex;
+  justify-content: center;
+
+  background-color: #ffd9e6;
+}

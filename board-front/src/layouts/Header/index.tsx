@@ -1,24 +1,40 @@
 import React, {ChangeEvent, useRef, useState, KeyboardEvent, useEffect} from "react";
 import './style.css';
-import {useNavigate, useParams} from "react-router-dom";
-import {AUTH_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH} from "../../constants";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {
+  AUTH_PATH,
+  BOARD_DETAIL_PATH, BOARD_PATH, BOARD_UPDATE_PATH,
+  BOARD_WRITE_PATH,
+  MAIN_PATH,
+  SEARCH_PATH,
+  USER_PATH
+} from "../../constants";
 import {useCookies} from "react-cookie";
-import {useLoginUserStore} from "../../stores";
+import {useBoardStore, useLoginUserStore} from "../../stores";
+import * as path from "node:path";
 
 export default function Header() {
   const {loginUser, setLoginUser, resetLoginUser} = useLoginUserStore();
+  const {pathname} = useLocation();
   const [cookies, setCookies] = useCookies();
+
   const [isLogin, setLogin] = useState<boolean>(false);
+  const [isAuthPage, setAuthPage] = useState<boolean>(false);
+  const [isMainPage, setMainPage] = useState<boolean>(false);
+  const [isBoardDetailPage, setBoardDetailPage] = useState<boolean>(false);
+  const [isSearchPage, setSearchPage] = useState<boolean>(false);
+  const [isBoardWritePage, setBoardWritePage] = useState<boolean>(false);
+  const [isBoardUpdatePage, setBoardUpdatePage] = useState<boolean>(false);
+  const [isUserPage, setUserPage] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  // ✅ 로그인 상태 동기화 — 최상단 useEffect로 이동
   useEffect(() => {
     setLogin(loginUser !== null);
   }, [loginUser]);
 
   const onLogoClickHandler = () => {
-    navigate(MAIN_PATH());
+    navigate(MAIN_PATH(''));
   };
 
   const SearchButton = () => {
@@ -28,8 +44,7 @@ export default function Header() {
     const {searchWord} = useParams();
 
     const onSearchWordChange = (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      setWord(value);
+      setWord(event.target.value);
     };
 
     const onSearchWordKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -40,7 +55,7 @@ export default function Header() {
 
     const onSearchButtonClickHandler = () => {
       if (!status) {
-        setStatus(!status);
+        setStatus(true);
         return;
       }
       navigate(SEARCH_PATH(word));
@@ -80,27 +95,24 @@ export default function Header() {
 
     const onMyPageButtonClick = () => {
       if (!loginUser) return;
-      const {email} = loginUser;
-      navigate(USER_PATH(email));
+      navigate(USER_PATH(loginUser.email));
     };
 
     const onSignOutButtonClick = () => {
       resetLoginUser();
       setCookies('accessToken', '', {path: '/', expires: new Date()});
-      navigate(MAIN_PATH());
+      navigate(MAIN_PATH(''));
     };
 
     const onSignInButtonClick = () => {
       navigate(AUTH_PATH());
     };
 
-    // ✅ 수정 1: userEmail이 없을 때도 MyPage 표시되도록 변경
     if (isLogin && userEmail === loginUser?.email)
       return (
           <div className="white-button" onClick={onSignOutButtonClick}>{'Logout'}</div>
       );
 
-    // ✅ 수정 2: 단순히 로그인했으면 MyPage 표시
     if (isLogin)
       return (
           <div className="white-button" onClick={onMyPageButtonClick}>{'MyPage'}</div>
@@ -110,6 +122,32 @@ export default function Header() {
         <div className='black-button' onClick={onSignInButtonClick}>{'Login'}</div>
     );
   };
+
+  const UploadButton = () => {
+    const {title, content, boardImageFileList} = useBoardStore();
+    const onUploadButtonClick = () => {
+      // 업로드 로직 추가
+    };
+
+    if (title && content) {
+      return <div className='black-button' onClick={onUploadButtonClick}>{'Upload'}</div>;
+    }
+
+    return <div className='disable-button'>{'Upload'}</div>;
+  };
+
+  useEffect(() => {
+    setAuthPage(pathname.startsWith(AUTH_PATH()));
+    setMainPage(pathname === MAIN_PATH(''));
+    setSearchPage(pathname.startsWith(SEARCH_PATH('')));
+    setBoardDetailPage(pathname.startsWith(BOARD_PATH() + '/' + BOARD_DETAIL_PATH('')));
+    setBoardWritePage(pathname.startsWith(BOARD_PATH() + '/' + BOARD_WRITE_PATH()));
+    setBoardUpdatePage(pathname.startsWith(BOARD_PATH() + '/' + BOARD_UPDATE_PATH('')));
+    setUserPage(pathname.startsWith(USER_PATH('')));
+  }, [pathname]);
+
+  const showSearchButton = !isBoardWritePage && !isBoardUpdatePage && (isAuthPage || isMainPage || isSearchPage || isBoardDetailPage);
+  const showMyPageButton = !isBoardWritePage && !isBoardUpdatePage && (isMainPage || isSearchPage || isBoardDetailPage || isUserPage);
 
   return (
       <div id='header'>
@@ -121,8 +159,9 @@ export default function Header() {
             <div className='header-logo'>{'NaWoong Board'}</div>
           </div>
           <div className='header-right-box'>
-            <SearchButton />
-            <MyPageButton />
+            {showSearchButton && <SearchButton />}
+            {showMyPageButton && <MyPageButton />}
+            {(isBoardWritePage || isBoardUpdatePage) && <UploadButton />}
           </div>
         </div>
       </div>
