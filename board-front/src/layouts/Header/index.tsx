@@ -124,9 +124,11 @@ export default function Header() {
   };
 
   const UploadButton = () => {
-    const {title, content, boardImageFileList} = useBoardStore();
+
+    const {title, content, boardImageFileList,resetBoard} = useBoardStore();
+
     const onUploadButtonClick = () => {
-      // 업로드 로직 추가
+
     };
 
     if (title && content) {
