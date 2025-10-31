@@ -27,15 +27,14 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // 🚨🚨🚨 수정 부분: cors(cors -> cors.disable()) 대신 cors(Customizer.withDefaults()) 사용
-            .cors(Customizer.withDefaults()) // ⬅️ 이전에 CorsConfig.java에서 정의한 CORS 설정을 활성화
+            .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/v1/auth/**", "/file/**").permitAll()
+                .requestMatchers("/", "/api/v1/**", "/file/**").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
