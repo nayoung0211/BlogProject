@@ -11,11 +11,9 @@ import com.nana.boardback.repository.ImageRepository;
 import com.nana.boardback.repository.UserRepository;
 import com.nana.boardback.repository.resultSet.GetBoardResultSet;
 import com.nana.boardback.service.BoardService;
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
