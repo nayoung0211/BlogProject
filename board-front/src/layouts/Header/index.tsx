@@ -135,10 +135,15 @@ export function Header() {
         const { code } = responseBody;
         if(code === 'AF' || code === 'NU'){
           navigate(AUTH_PATH());
-          return;
         }
+        if(code === 'VF') alert('Enter title and content');
+        if(code === 'DBE') alert('Database error');
+        if(code !== 'SU') return;
       }
-
+      resetBoard();
+      if(!loginUser) return;
+      const {email} =loginUser;
+      navigate(USER_PATH(email));
     }
 
     const onUploadButtonClick = async () => {

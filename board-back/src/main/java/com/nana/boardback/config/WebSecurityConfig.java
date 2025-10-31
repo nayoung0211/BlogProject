@@ -8,6 +8,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer; // 🚨 이 import가 필요합니다.
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,7 +27,8 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(cors -> cors.disable())
+            // 🚨🚨🚨 수정 부분: cors(cors -> cors.disable()) 대신 cors(Customizer.withDefaults()) 사용
+            .cors(Customizer.withDefaults()) // ⬅️ 이전에 CorsConfig.java에서 정의한 CORS 설정을 활성화
             .csrf(csrf -> csrf.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
             .sessionManagement(session ->

@@ -15,19 +15,27 @@ const authorization = (accessToken: string) =>{
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
 
-export const signInRequest = async (requestBody: SignInRequestDto) =>{
-  const result = await axios.post(SIGN_IN_URL(), requestBody)
-  .then(response => {
-    const responseBody: SignInRequestDto = response.data;
+export const signInRequest = async (requestBody: SignInRequestDto): Promise<SignInResponseDto | ResponseDto | null> => {
+  try {
+    const response = await axios.post(SIGN_IN_URL(), requestBody);
+    const responseBody: SignInResponseDto = response.data; // ✅ 요청 DTO가 아닌 Response DTO
     return responseBody;
-  })
-  .catch(error => {
-    if(!error.response.data) return null;
+  } catch (error: any) {
+    if (!error.response) {
+      console.error('Network error or CORS issue', error);
+      return null;
+    }
+
+    if (!error.response.data) {
+      console.error('No response data', error.response);
+      return null;
+    }
+
     const responseBody: ResponseDto = error.response.data;
     return responseBody;
-  })
-  return result;
+  }
 }
+
 export const signUpRequest = async (requestBody: SignUpRequestDto) =>{
   const result  = await axios.post(SIGN_UP_URL(), requestBody)
   .then(response => {

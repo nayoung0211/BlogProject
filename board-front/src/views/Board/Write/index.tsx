@@ -4,6 +4,7 @@ import useBoardStore from "../../../stores/board.store";
 import {useLoginUserStore} from "../../../stores";
 import {useNavigate} from "react-router-dom";
 import {MAIN_PATH} from "../../../constants";
+import {useCookies} from "react-cookie";
 
 
 export default function BoardWrite() {
@@ -13,10 +14,10 @@ export default function BoardWrite() {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const {title,setTitle,content,setContent,boardImageFileList,setBoardImageFileList} = useBoardStore();
   const {resetBoard} = useBoardStore();
-  const {loginUser} = useLoginUserStore();
+  const [cookies,setCookies] =  useCookies(['accessToken']);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const onTitleChange = (event: ChangeEvent<HTMLTextAreaElement>) =>{
     const {value} = event.target;
@@ -65,8 +66,9 @@ export default function BoardWrite() {
   }
 
   useEffect(() => {
-    if(!loginUser) {
-      navigator(MAIN_PATH());
+    const accessToken = cookies.accessToken;
+    if(!accessToken) {
+      navigate(MAIN_PATH());
       return;
     }
     resetBoard();

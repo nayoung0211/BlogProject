@@ -27,10 +27,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
+        // 🚨 CORS Preflight 요청 (OPTIONS 메서드)은 인증 필터를 건너뛰고 바로 통과시킵니다.
+        // Preflight 요청은 Authorization 헤더가 없으며, CORS 필터에서만 처리되어야 합니다.
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String path = request.getServletPath();
 
-
+            // /api/v1/auth 경로는 인증 없이 통과 (로그인/회원가입 등)
             if (path.startsWith("/api/v1/auth")) {
                 filterChain.doFilter(request, response);
                 return;
@@ -39,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 🔹 토큰 추출
             String token = parseBearerToken(request);
             if (token == null) {
+                // 토큰이 없어도 일단 필터 체인을 계속 진행시킵니다.
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -46,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 🔹 토큰 유효성 검사
             String email = jwtProvider.validate(token);
             if (email == null) {
+                // 토큰이 유효하지 않아도 일단 필터 체인을 계속 진행시킵니다.
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -61,6 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.setContext(context);
 
         } catch (Exception e) {
+            // 예외 발생 시 스택 트레이스를 출력하고, 필터 체인을 계속 진행하여 다른 필터나 컨트롤러에서 처리되도록 합니다.
             e.printStackTrace();
         }
 
