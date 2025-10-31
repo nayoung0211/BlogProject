@@ -3,6 +3,8 @@ import axios from "axios";
 import ResponseDto from "./response/response.dto";
 import {SignInResponseDto, SignUpResponseDto} from "./response/auth";
 import {GetSignInUserResponseDto} from "./response/user";
+import {PostBoardRequestDTO} from "./request/board";
+import {PostBoardResponseDTO} from "./response/board";
 
 const DOMAIN = 'http://localhost:4000';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
@@ -39,7 +41,22 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) =>{
   });
   return result;
 }
+const POST_BOARD_URL = () =>`${API_DOMAIN}/board`;
 
+export const postBoardRequest = async (requestBody: PostBoardRequestDTO, accessToken: string) =>{
+  const result = await axios.post(POST_BOARD_URL(), requestBody,authorization(accessToken))
+  .then(response => {
+    const responseBody: PostBoardResponseDTO = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+
+}
 const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/user`;
 
 export const getSignInUserRequest = async (accessToken: string) => {
@@ -74,9 +91,9 @@ export const getSignInUserRequest = async (accessToken: string) => {
 
 const FILE_DOMAIN = `${DOMAIN}/file`;
 const FILE_UPLOAD_URL = () =>`${FILE_DOMAIN}/upload`;
-const mutipartFormData = {headers:{'Content-Type': 'multipart/form-data'}}
+const multipartFormData = {headers:{'Content-Type': 'multipart/form-data'}}
 export const fileUploadRequest = async (data: FormData) =>{
-  const result = await axios.post(FILE_UPLOAD_URL(), data,mutipartFormData)
+  const result = await axios.post(FILE_UPLOAD_URL(), data,multipartFormData)
   .then(response => {
     const responseBody: string = response.data;
     return responseBody;

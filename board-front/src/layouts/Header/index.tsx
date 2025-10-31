@@ -12,8 +12,11 @@ import {
 import {useCookies} from "react-cookie";
 import {useBoardStore, useLoginUserStore} from "../../stores";
 import * as path from "node:path";
+import {fileUploadRequest, postBoardRequest} from "../../apis";
+import {PostBoardRequestDTO} from "../../apis/request/board";
+import ResponseDto from "../../apis/response/response.dto";
 
-export default function Header() {
+export function Header() {
   const {loginUser, setLoginUser, resetLoginUser} = useLoginUserStore();
   const {pathname} = useLocation();
   const [cookies, setCookies] = useCookies();
@@ -125,10 +128,36 @@ export default function Header() {
 
   const UploadButton = () => {
 
-    const {title, content, boardImageFileList,resetBoard} = useBoardStore();
+    const {title, content, boardImageFileList, resetBoard} = useBoardStore();
+    const postBoardResponse = (responseBody: PostBoardRequestDTO | ResponseDto | null) => {
+      if (!responseBody) return;
+      if("code" in responseBody){
+        const { code } = responseBody;
+        if(code === 'AF' || code === 'NU'){
+          navigate(AUTH_PATH());
+          return;
+        }
+      }
 
-    const onUploadButtonClick = () => {
+    }
 
+    const onUploadButtonClick = async () => {
+      const accessToken = cookies.accessToken;
+      if (!accessToken) return;
+
+      const boardImageList: string[] = [];
+
+      for (const file of boardImageFileList) {
+        const data = new FormData();
+        data.append('file', file);
+
+        const url = await fileUploadRequest(data);
+        if (url) boardImageList.push(url);
+      }
+      const requestBody: PostBoardRequestDTO = {
+        title, content, boardImageList
+      }
+      postBoardRequest(requestBody, accessToken).then(postBoardResponse);
     };
 
     if (title && content) {
@@ -161,9 +190,9 @@ export default function Header() {
             <div className='header-logo'>{'NaWoong Board'}</div>
           </div>
           <div className='header-right-box'>
-            {showSearchButton && <SearchButton />}
-            {showMyPageButton && <MyPageButton />}
-            {(isBoardWritePage || isBoardUpdatePage) && <UploadButton />}
+            {showSearchButton && <SearchButton/>}
+            {showMyPageButton && <MyPageButton/>}
+            {(isBoardWritePage || isBoardUpdatePage) && <UploadButton/>}
           </div>
         </div>
       </div>
