@@ -44,5 +44,4 @@ public class BoardController {
         ResponseEntity<? super PutFavoriteResponseDto> response = boardService.putFavorite(boardNumber, email);
         return response;
     }
-
 }
