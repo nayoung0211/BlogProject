@@ -1,47 +1,67 @@
 import React, {useEffect, useState} from "react";
 import './style.css';
-import FavoriteItem from "../../../components/FavoritesItem";
-import {favoriteListMock} from "../../../mocks";
+import FavoriteItem from "../../../components/FavoriteItem";
+import {commentListMock, favoriteListMock} from "../../../mocks";
+import {CommentListItem, FavoriteListItem} from "../../../types";
+import CommentItem from "../../../components/CommentItem";
+import Pagination from "../../../components/Pagination";
+import defaultProfileImage from 'assets/image/default-profile-image.png'
 
 
 export default function BoardDetail() {
 
-  const BoardDetailTop = () =>{
+  const BoardDetailTop = () => {
+
+    const [showMore,setShowMore] = useState<boolean>(false);
+
+    const onMoreButtonClick = () =>{
+      setShowMore(!showMore);
+    }
+
     return (
         <div id='board-detail-top'>
           <div className='board-detail-top-header'>
             <div className='board-detail-title'>{'오늘 점심 머먹지'}</div>
             <div className='board-detail-top-sub-box'>
               <div className='board-detail-write-info-box'>
-              <div className='board-detail-writer-profile-image'></div>
+                <div
+                    className='board-detail-writer-profile-image'
+                    style={{ backgroundImage: `url(${defaultProfileImage})` }}
+                ></div>
                 <div className='board-detail-writer-nickname'>{'나나웅웅이'}</div>
-                <div className='board-detail-info-divider'>{'\|'}</div>
+                <div className='board-detail-info-divider'>{'|'}</div>
                 <div className='board-detail-write-date'>{'2025.11.05'}</div>
               </div>
-              <div className='icon-button'>
-                <div className='icon more-icon'></div>
-              </div>
-              <div className='board-detail-more-box'>
-                <div className='board-detail-update-button'>{'update'}</div>
-                <div className='divider'></div>
-                <div className='board-detail-delete-button'>{'delete'}</div>
-              </div>
+            <div className='icon-button' onClick={onMoreButtonClick}>
+              <div className='icon more-icon'></div>
             </div>
+            {showMore &&
+            <div className='board-detail-more-box'>
+              <div className='board-detail-update-button'>{'update'}</div>
+              <div className='divider'></div>
+              <div className='board-detail-delete-button'>{'delete'}</div>
+            </div>
+            }
+          </div>
           </div>
           <div className='divider'></div>
           <div className='board-detail-top-main'>
             <div className='board-detail-main-text'>{'나는 편의점 갈거야'}</div>
-            <div className='board-detail-main-image'></div>
+            <img className='board-detail-main-image' src='https://i.namu.wiki/i/srv6HKizA5mF37oXWTqNbj6UFkHhVMkF6O4dxXssI-Muobs900FVE8UZbjQNSrClc3_cXHVVuwhnvFZMV6nzPg.webp'></img>
           </div>
         </div>
     );
-  }
+  };
 
   const BoardDetailBottom = () =>{
     const [favoriteList,setFavoriteList] = useState<FavoriteListItem[]>([]);
+    const [commentList,setCommentList] = useState<CommentListItem[]>([]);
+
+
 
     useEffect(() => {
       setFavoriteList(favoriteListMock);
+      setCommentList(commentListMock);
     }, []);
 
     return (
@@ -74,11 +94,29 @@ export default function BoardDetail() {
               </div>
             </div>
           </div>
-          <div className='board-detail-bottom-comment-box'></div>
+          <div className='board-detail-bottom-comment-box'>
+            <div className='board-detail-bottom-comment-container'>
+              <div className='board-detail-bottom-comment-title'>{'comment'}<span className='emphasis'>{10}</span></div>
+              <div className='board-detail-bottom-comment-list-container'>
+                {commentList.map(item =><CommentItem commentListItem={item}/>)}
+              </div>
+            </div>
+            <div className='divider'></div>
+            <div className='board-detail-bottom-comment-pagination-box'>
+              <Pagination/>
+            </div>
+            <div className='board-detail-bottom-comment-input-container'>
+              <div className='board-detail-bottom-comment-input-container'>
+                <textarea className='board-detail-bottom-comment-textarea' placeholder='Enter the comment'/>
+                <div className='board-detail-bottom-comment-button-box'>
+                  <div className='disable-button'>{'upload comment'}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    )
-  }
-
+    );
+  };
   return (
       <div id='board-detail-wrapper'>
         <div className='board-detail-container'>
