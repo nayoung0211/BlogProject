@@ -3,6 +3,7 @@ package com.nana.boardback.controller;
 import com.nana.boardback.dto.request.board.PostBoardRequestDto;
 import com.nana.boardback.dto.request.board.PostCommentRequestDto;
 import com.nana.boardback.dto.response.board.GetBoardResponseDto;
+import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostCommentResponseDto;
@@ -62,6 +63,13 @@ public class BoardController {
         @AuthenticationPrincipal String email
     ){
         ResponseEntity<? super PutFavoriteResponseDto> response = boardService.putFavorite(boardNumber, email);
+        return response;
+    }
+    @GetMapping("/{boardNumber}/comment-list")
+    public ResponseEntity<? super GetCommentListResponseDto> getCommentList(
+        @PathVariable("boardNumber") Integer boardNumber
+    ){
+        ResponseEntity<? super GetCommentListResponseDto> response = boardService.getCommentList(boardNumber);
         return response;
     }
 

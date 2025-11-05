@@ -4,6 +4,7 @@ import com.nana.boardback.dto.request.board.PostBoardRequestDto;
 import com.nana.boardback.dto.request.board.PostCommentRequestDto;
 import com.nana.boardback.dto.response.ResponseDto;
 import com.nana.boardback.dto.response.board.GetBoardResponseDto;
+import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostCommentResponseDto;
@@ -18,6 +19,7 @@ import com.nana.boardback.repository.FavoriteRepository;
 import com.nana.boardback.repository.ImageRepository;
 import com.nana.boardback.repository.UserRepository;
 import com.nana.boardback.repository.resultSet.GetBoardResultSet;
+import com.nana.boardback.repository.resultSet.GetCommentListResultSet;
 import com.nana.boardback.repository.resultSet.GetFavoriteResultSet;
 import com.nana.boardback.service.BoardService;
 import java.util.ArrayList;
@@ -106,6 +108,23 @@ public class BoardServiceImplement implements BoardService {
             return ResponseDto.databaseError();
         }
         return GetFavoriteListResponseDto.success(resultSets);
+    }
+
+    @Override
+    public ResponseEntity<? super GetCommentListResponseDto> getCommentList(Integer boardNumber) {
+        List<GetCommentListResultSet> resultSets = new ArrayList<>();
+
+        try{
+            boolean existedBoard = boardRepository.existsByBoardNumber(boardNumber);
+            if(!existedBoard){
+                return GetCommentListResponseDto.noExistBoard();
+            }
+            resultSets = commentRepository.getCommentList(boardNumber);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetCommentListResponseDto.success(resultSets);
     }
 
     @Override

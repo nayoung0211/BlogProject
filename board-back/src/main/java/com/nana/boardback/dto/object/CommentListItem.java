@@ -1,5 +1,9 @@
 package com.nana.boardback.dto.object;
 
+import com.nana.boardback.repository.resultSet.GetCommentListResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.stream.events.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,4 +19,19 @@ public class CommentListItem {
     private String writeDatetime;
     private String content;
 
+    public CommentListItem(GetCommentListResultSet resultSet) {
+        this.nickname = resultSet.getNickname();
+        this.profileImage = resultSet.getProfileImage();
+        this.writeDatetime = resultSet.getWriteDatetime();
+        this.content = resultSet.getContent();
+    }
+
+    public static List<CommentListItem> copyList(List<GetCommentListResultSet> resultSets) {
+        List<CommentListItem> list = new ArrayList<>();
+        for (GetCommentListResultSet resultSet : resultSets) {
+            CommentListItem item = new CommentListItem(resultSet);
+            list.add(item);
+        }
+        return list;
+    }
 }
