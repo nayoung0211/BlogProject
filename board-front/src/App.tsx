@@ -23,7 +23,7 @@ import {useLoginUserStore} from "./stores";
 import {getSignInUserRequest} from "./apis";
 import {GetSignInUserResponseDto} from "./apis/response/user";
 import ResponseDto from "./apis/response/response.dto";
-import {User} from "./types";
+import {User} from "./types/interface";
 
 
 function App() {

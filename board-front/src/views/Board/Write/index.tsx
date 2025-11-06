@@ -66,11 +66,6 @@ export default function BoardWrite() {
   }
 
   useEffect(() => {
-    const accessToken = cookies.accessToken;
-    if(!accessToken) {
-      navigate(MAIN_PATH());
-      return;
-    }
     resetBoard();
   }, []);
 

@@ -2,22 +2,36 @@ import React, {useEffect, useState} from "react";
 import './style.css';
 import FavoriteItem from "../../../components/FavoriteItem";
 import {commentListMock, favoriteListMock} from "../../../mocks";
-import {CommentListItem, FavoriteListItem} from "../../../types";
+import {Board, CommentListItem, FavoriteListItem} from "../../../types/interface";
 import CommentItem from "../../../components/CommentItem";
 import Pagination from "../../../components/Pagination";
 import defaultProfileImage from 'assets/image/default-profile-image.png'
+import {useLoginUserStore} from "../../../stores";
+import {useNavigate, useParams} from "react-router-dom";
+import {USER_PATH} from "../../../constants";
+
 
 
 export default function BoardDetail() {
+    const {loginUser}=useLoginUserStore();
+    const {boardNumber} = useParams();
+
+    const navigator = useNavigate();
+
 
   const BoardDetailTop = () => {
 
     const [showMore,setShowMore] = useState<boolean>(false);
+    const [board,setBoard] = useState<Board | null>(null);
 
     const onMoreButtonClick = () =>{
       setShowMore(!showMore);
     }
-
+    const onNicknameClick = () =>{
+      if(!board) return;
+      navigator(USER_PATH(board.writerEmail));
+    }
+    //if(!board) return<></>
     return (
         <div id='board-detail-top'>
           <div className='board-detail-top-header'>
@@ -26,9 +40,9 @@ export default function BoardDetail() {
               <div className='board-detail-write-info-box'>
                 <div
                     className='board-detail-writer-profile-image'
-                    style={{ backgroundImage: `url(${defaultProfileImage})` }}
+                    style={{ backgroundImage: `url(${board.writerProfileImage ? board.writerProfileImage : defaultProfileImage})` }}
                 ></div>
-                <div className='board-detail-writer-nickname'>{'나나웅웅이'}</div>
+                <div className='board-detail-writer-nickname' onClick={onNicknameClick}>{board.writerNickname}</div>
                 <div className='board-detail-info-divider'>{'|'}</div>
                 <div className='board-detail-write-date'>{'2025.11.05'}</div>
               </div>
@@ -88,7 +102,7 @@ export default function BoardDetail() {
           </div>
           <div className='board-detail-bottom-favorite-box'>
             <div className='board-detail-bottom-favorite-container'>
-              <div className='board-detail-bottom-favorite-title'>{'like'}<span className='emphasis'>{12}</span></div>
+              <div className='board-detail-bottom-favorite-title'>{'like '}<span className='emphasis'>{12}</span></div>
               <div className='board-detail-bottom-favorite-contents'>
                 {favoriteList.map(item =><FavoriteItem favoriteListItem={item}/>)}
               </div>
@@ -96,7 +110,7 @@ export default function BoardDetail() {
           </div>
           <div className='board-detail-bottom-comment-box'>
             <div className='board-detail-bottom-comment-container'>
-              <div className='board-detail-bottom-comment-title'>{'comment'}<span className='emphasis'>{10}</span></div>
+              <div className='board-detail-bottom-comment-title'>{'comment '}<span className='emphasis'>{10}</span></div>
               <div className='board-detail-bottom-comment-list-container'>
                 {commentList.map(item =><CommentItem commentListItem={item}/>)}
               </div>
@@ -105,11 +119,11 @@ export default function BoardDetail() {
             <div className='board-detail-bottom-comment-pagination-box'>
               <Pagination/>
             </div>
-            <div className='board-detail-bottom-comment-input-container'>
+            <div className='board-detail-bottom-comment-input-box'>
               <div className='board-detail-bottom-comment-input-container'>
                 <textarea className='board-detail-bottom-comment-textarea' placeholder='Enter the comment'/>
                 <div className='board-detail-bottom-comment-button-box'>
-                  <div className='disable-button'>{'upload comment'}</div>
+                  <div className='disable-button'>{'Add'}</div>
                 </div>
               </div>
             </div>
