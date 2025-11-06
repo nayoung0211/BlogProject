@@ -27,7 +27,7 @@
   cursor: pointer;
 }
 .black-button:hover{
-  background-color: #ff89a2;
+  background-color: #ff87a6;
 }
 .disable-button{
   border-radius: 46px;
@@ -38,7 +38,7 @@
   justify-content: center;
   align-items: center;
 
-  background-color: #ff4f79;
+  background-color:  #ffd9e6;
 
   color: white;
 
