@@ -3,7 +3,7 @@ export default interface Board {
   title: string;
   content: string;
   boardImageList: string[];
-  writeDateTime: string;
+  writeDatetime: string;
   writerEmail: string;
   writerNickname: string;
   writerProfileImage: string | null;

@@ -5,6 +5,7 @@ import com.nana.boardback.dto.request.board.PostCommentRequestDto;
 import com.nana.boardback.dto.response.board.GetBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
+import com.nana.boardback.dto.response.board.IncreaseViewCountResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostCommentResponseDto;
 import com.nana.boardback.dto.response.board.PutFavoriteResponseDto;
@@ -16,5 +17,6 @@ public interface BoardService {
     ResponseEntity<? super PutFavoriteResponseDto> putFavorite(Integer boardNumber,String email);
     ResponseEntity<? super GetFavoriteListResponseDto> getFavoriteList(Integer boardNumber);
     ResponseEntity<? super GetCommentListResponseDto> getCommentList(Integer boardNumber);
+    ResponseEntity<? super IncreaseViewCountResponseDto> increaseViewCount(Integer boardNumber);
     ResponseEntity<? super PostCommentResponseDto> postComment(PostCommentRequestDto dto,String email,Integer boardNumber);
 }

@@ -15,7 +15,7 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
                 "B.board_number AS boardNumber, "+
                 "B.title AS title, "+
                 "B.content AS content, "+
-                "B.write_datetime AS writerDatetime, "+
+                "B.write_datetime AS writeDatetime, "+  // 수정
                 "B.writer_email AS writerEmail, "+
                 "U.nickname AS writerNickname, "+
                 "U.profile_image AS writerProfileImage "+
@@ -24,10 +24,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
                 "ON B.writer_email = U.email "+
                 "WHERE board_number = ?1 ",
         nativeQuery = true
-
-
     )
     GetBoardResultSet getBoard(Integer boardNumber);
+
 
     BoardEntity findByBoardNumber(Integer boardNumber);
 

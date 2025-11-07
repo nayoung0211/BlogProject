@@ -9,7 +9,10 @@ import defaultProfileImage from 'assets/image/default-profile-image.png'
 import {useLoginUserStore} from "../../../stores";
 import {useNavigate, useParams} from "react-router-dom";
 import {BOARD_PATH, BOARD_UPDATE_PATH, MAIN_PATH, USER_PATH} from "../../../constants";
-import boardMock from "../../../mocks/board.mock";
+import {getBoardRequest, increaseViewCountRequest} from "../../../apis";
+import GetBoardResponseDTO from "../../../apis/response/board/get-board.response.dto";
+import ResponseDto from "../../../apis/response/response.dto";
+import IncreaseViewCountResponseDto from "../../../apis/response/board/increase-view-count.response.dto";
 
 export default function BoardDetail() {
   const {loginUser}=useLoginUserStore();
@@ -17,10 +20,31 @@ export default function BoardDetail() {
 
   const navigator = useNavigate();
 
+  const increaseViewCountResponse = (responseBody: IncreaseViewCountResponseDto | ResponseDto | null) =>{
+    if(!responseBody) return;
+    const { code } = responseBody;
+    if(code === 'NB') alert ('존재하지 않는 게시물입니다.');
+    if(code === 'DBE') alert ('데이터 베이스 오류입니다.');
+    return;
+  }
+
   const BoardDetailTop = () => {
 
     const [showMore,setShowMore] = useState<boolean>(false);
     const [board,setBoard] = useState<Board | null>(null);
+
+    const getBoardResponse = (responseBody: GetBoardResponseDTO | ResponseDto | null)=> {
+      if(!responseBody) return;
+      const {code} = responseBody;
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !=='SU') {
+        navigator(MAIN_PATH());
+        return;
+      }
+      const board: Board = {...responseBody as GetBoardResponseDTO};
+      setBoard(board);
+    }
 
     const onMoreButtonClick = () =>{
       setShowMore(!showMore);
@@ -42,10 +66,14 @@ export default function BoardDetail() {
     }
 
     useEffect(() => {
-      setBoard(boardMock);
+      if(!boardNumber) {
+        navigator(MAIN_PATH());
+        return;
+      }
+      getBoardRequest(boardNumber).then(getBoardResponse);
     }, [boardNumber]);
 
-    if(!board) return<></>
+    if(!board) return null;
     return (
         <div id='board-detail-top'>
           <div className='board-detail-top-header'>
@@ -58,7 +86,7 @@ export default function BoardDetail() {
                 ></div>
                 <div className='board-detail-writer-nickname' onClick={onNicknameClick}>{board.writerNickname}</div>
                 <div className='board-detail-info-divider'>{'|'}</div>
-                <div className='board-detail-write-date'>{board.writeDateTime}</div>
+                <div className='board-detail-write-date'>{board.writeDatetime}</div>
               </div>
               <div className='icon-button' onClick={onMoreButtonClick}>
                 <div className='icon more-icon'></div>
@@ -91,6 +119,8 @@ export default function BoardDetail() {
     const [comment,setComment] = useState<string>('');
     const commentRef = useRef<HTMLTextAreaElement | null>(null);
 
+    const isMounted = useRef(false);
+
     const onFavoriteClick = () =>{
       setFavorite(!isFavorite);
     }
@@ -115,6 +145,19 @@ export default function BoardDetail() {
     useEffect(() => {
       setFavoriteList(favoriteListMock);
       setCommentList(commentListMock);
+    }, [boardNumber]);
+
+    useEffect(() => {
+      if (!boardNumber) return;
+
+      if (!isMounted.current) {
+        isMounted.current = true;
+        increaseViewCountRequest(boardNumber).then(increaseViewCountResponse);
+      }
+
+      return () => {
+        isMounted.current = false;
+      };
     }, [boardNumber]);
 
     return (
@@ -182,7 +225,7 @@ export default function BoardDetail() {
                 />
                     <div className='board-detail-bottom-comment-button-box'>
                       <div className={comment.trim() === '' ? 'disable-button' : 'black-button'}
-                      onClick={onAddComment}>{'Add'}</div>
+                           onClick={onAddComment}>{'Add'}</div>
                     </div>
                   </div>
                 </div>

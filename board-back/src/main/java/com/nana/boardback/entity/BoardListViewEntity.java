@@ -1,5 +1,6 @@
 package com.nana.boardback.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -22,6 +23,7 @@ public class BoardListViewEntity {
     private String titleImage;
     private int viewCount;
     private int favoriteCount;
+    @Column(name = "write_datetime")
     private String writeDatetime;
     private String writerEmail;
     private String writerNickname;
