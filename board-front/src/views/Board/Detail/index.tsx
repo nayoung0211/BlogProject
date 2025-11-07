@@ -13,6 +13,7 @@ import {getBoardRequest, increaseViewCountRequest} from "../../../apis";
 import GetBoardResponseDTO from "../../../apis/response/board/get-board.response.dto";
 import ResponseDto from "../../../apis/response/response.dto";
 import IncreaseViewCountResponseDto from "../../../apis/response/board/increase-view-count.response.dto";
+import dayjs from "dayjs";
 
 export default function BoardDetail() {
   const {loginUser}=useLoginUserStore();
@@ -30,8 +31,15 @@ export default function BoardDetail() {
 
   const BoardDetailTop = () => {
 
+    const [isWriter,setWriter] = useState<boolean>(false);
     const [showMore,setShowMore] = useState<boolean>(false);
     const [board,setBoard] = useState<Board | null>(null);
+
+    const getWriteDatetimeFormat = () =>{
+      if(!board) return '';
+      const date = dayjs(board.writeDatetime);
+      return date.format('YYYY.MM.DD');
+    }
 
     const getBoardResponse = (responseBody: GetBoardResponseDTO | ResponseDto | null)=> {
       if(!responseBody) return;
@@ -44,6 +52,12 @@ export default function BoardDetail() {
       }
       const board: Board = {...responseBody as GetBoardResponseDTO};
       setBoard(board);
+      if(!loginUser) {
+        setWriter(false);
+        return;
+      }
+      const isWriter = loginUser.email === board.writerEmail;
+      setWriter(isWriter);
     }
 
     const onMoreButtonClick = () =>{
@@ -86,11 +100,13 @@ export default function BoardDetail() {
                 ></div>
                 <div className='board-detail-writer-nickname' onClick={onNicknameClick}>{board.writerNickname}</div>
                 <div className='board-detail-info-divider'>{'|'}</div>
-                <div className='board-detail-write-date'>{board.writeDatetime}</div>
+                <div className='board-detail-write-date'>{getWriteDatetimeFormat()}</div>
               </div>
+              {isWriter &&
               <div className='icon-button' onClick={onMoreButtonClick}>
                 <div className='icon more-icon'></div>
               </div>
+              }
               {showMore &&
                   <div className='board-detail-more-box'>
                     <div className='board-detail-update-button' onClick={onUpdateButtonClick}>{'update'}</div>
@@ -214,6 +230,7 @@ export default function BoardDetail() {
                 <div className='board-detail-bottom-comment-pagination-box'>
                   <Pagination/>
                 </div>
+                {loginUser !== null &&
                 <div className='board-detail-bottom-comment-input-box'>
                   <div className='board-detail-bottom-comment-input-container'>
                 <textarea
@@ -229,6 +246,7 @@ export default function BoardDetail() {
                     </div>
                   </div>
                 </div>
+                }
               </div>
           }
         </div>
