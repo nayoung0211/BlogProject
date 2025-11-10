@@ -3,20 +3,23 @@ import axios from "axios";
 import ResponseDto from "./response/response.dto";
 import {SignInResponseDto, SignUpResponseDto} from "./response/auth";
 import {GetSignInUserResponseDto} from "./response/user";
-import {PostBoardRequestDTO} from "./request/board";
+import {PostBoardRequestDTO, PostCommentRequestDto} from "./request/board";
 import {
+  DeleteBoardResponseDto,
   GetBoardResponseDTO, GetCommentListResponseDto,
   GetFavoriteListResponseDTO,
   PostBoardResponseDTO
 } from "./response/board";
 import IncreaseViewCountResponseDto from "./response/board/increase-view-count.response.dto";
 import {FavoriteListItem} from "../types/interface";
+import PostCommentResponseDto from "./response/board/post-comment.response.dto";
 
 const DOMAIN = 'http://localhost:4000';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 const authorization = (accessToken: string) =>{
   return {headers:{Authorization: `Bearer ${accessToken}`}}
 };
+
 
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
@@ -60,7 +63,9 @@ const INCREASE_VIEW_COUNT_URL = (boardNumber: number | string) => `${API_DOMAIN}
 const GET_FAVORITE_LIST_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite-list`;
 const GET_COMMENT_LIST_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/comment-list`;
 const POST_BOARD_URL = () =>`${API_DOMAIN}/board`;
+const POST_COMMENT_URL = (boardNumber: number | string)  => `${API_DOMAIN}/board/${boardNumber}/comment`;
 const PUT_FAVORITE_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite`;
+const DELETE_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
 
 export const getBoardRequest = async (boardNumber: number | string)=>{
   const result = await axios.get(GET_BOARD_URL(boardNumber))
@@ -130,12 +135,41 @@ export const postBoardRequest = async (requestBody: PostBoardRequestDTO, accessT
     return responseBody;
   })
   return result;
-
 }
+export const postCommentRequest = async (boardNumber: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
+  const result = await axios.post(POST_COMMENT_URL(boardNumber), requestBody, authorization(accessToken))
+  .then(response => {
+    const responseBody : PostCommentResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+}
+
+
+
 export const putFavoriteRequest = async (boardNumber: number | string,accessToken: string) =>{
   const result = await axios.put(PUT_FAVORITE_URL(boardNumber),{},authorization(accessToken))
   .then(response => {
     const responseBody: PostBoardResponseDTO = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+}
+
+export const deleteBoardsRequest = async(boardNumber: number | string,accessToken:string) =>{
+  const result = await axios.delete(DELETE_BOARD_URL(boardNumber),authorization(accessToken))
+  .then(response => {
+    const responseBody: DeleteBoardResponseDto = response.data;
     return responseBody;
   })
   .catch(error => {
@@ -157,24 +191,19 @@ export const getSignInUserRequest = async (accessToken: string) => {
         authorization(accessToken)
     );
 
-    // 정상 응답일 때
     const responseBody: GetSignInUserResponseDto = response.data;
     return responseBody;
 
   } catch (error: any) {
-    // 에러 응답이 아예 없는 경우 (네트워크 문제 등)
     if (!error.response) {
       console.error('Network or CORS error:', error);
       return null;
     }
 
-    // 에러 응답이 있지만 .data가 없는 경우
     if (!error.response.data) {
       console.error('No response body:', error.response);
       return null;
     }
-
-    // 서버에서 ResponseDto 형태의 응답을 보낸 경우
     const responseBody: ResponseDto = error.response.data;
     return responseBody;
   }

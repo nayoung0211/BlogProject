@@ -1,7 +1,6 @@
 package com.nana.boardback.entity;
 
 import com.nana.boardback.dto.request.board.PostCommentRequestDto;
-import com.nana.boardback.dto.response.board.PostCommentResponseDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

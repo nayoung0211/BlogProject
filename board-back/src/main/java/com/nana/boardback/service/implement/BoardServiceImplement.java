@@ -3,6 +3,7 @@ package com.nana.boardback.service.implement;
 import com.nana.boardback.dto.request.board.PostBoardRequestDto;
 import com.nana.boardback.dto.request.board.PostCommentRequestDto;
 import com.nana.boardback.dto.response.ResponseDto;
+import com.nana.boardback.dto.response.board.DeleteBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
@@ -139,6 +140,34 @@ public class BoardServiceImplement implements BoardService {
             return ResponseDto.databaseError();
         }
         return IncreaseViewCountResponseDto.success();
+    }
+
+    @Override
+    public ResponseEntity<? super DeleteBoardResponseDto> deleteBoard(Integer boardNumber,String email) {
+        try{
+            boolean existedUser = userRepository.existsByEmail(email);
+            if(!existedUser){
+                return DeleteBoardResponseDto.noExistUser();
+            }
+            BoardEntity boardEntity = boardRepository.findByBoardNumber(boardNumber);
+            if(boardEntity == null){
+                return DeleteBoardResponseDto.noExistBoard();
+            }
+            String writerEmail = boardEntity.getWriterEmail();
+            boolean isWriter = writerEmail.equals(email);
+            if(!isWriter)return  DeleteBoardResponseDto.noPermission();
+
+            imageRepository.deleteByBoardNumber(boardNumber);
+            commentRepository.deleteByBoardNumber(boardNumber);
+            favoriteRepository.deleteByBoardNumber(boardNumber);
+            boardRepository.delete(boardEntity);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return DeleteBoardResponseDto.success();
     }
 
     @Override

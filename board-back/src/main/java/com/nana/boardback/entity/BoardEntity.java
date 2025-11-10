@@ -7,10 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime; // 🚨 java.time 패키지 사용
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp; // 🚨 이 어노테이션을 사용합니다.
+import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @NoArgsConstructor

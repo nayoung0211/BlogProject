@@ -7,17 +7,17 @@ import dayjs from "dayjs";
 interface Props {
   commentListItem : CommentListItem;
 }
-//component CommentListItem 컴포넌트
 
 export default function CommentItem({commentListItem }: Props) {
   const {nickname,profileImage,writeDatetime,content} = commentListItem;
-  //렌더링
+
   const getElapsedTime = () => {
-    const now = dayjs().add(9,'hour');
+    const now = dayjs();
     const writeTime = dayjs(writeDatetime);
 
     const gap = now.diff(writeTime,'s');
-    if(gap < 60) return `${gap}초 전`;
+
+    if(gap < 60) return `${gap <= 5 ? '방금 전' : `${gap}초 전`}`;
     if(gap < 3600) return `${Math.floor(gap/60)}분 전`;
     if(gap < 86400) return `${Math.floor(gap/3600)}시간 전`;
     return `${Math.floor(gap/86400)}일 전`;

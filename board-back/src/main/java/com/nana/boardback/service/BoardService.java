@@ -2,6 +2,7 @@ package com.nana.boardback.service;
 
 import com.nana.boardback.dto.request.board.PostBoardRequestDto;
 import com.nana.boardback.dto.request.board.PostCommentRequestDto;
+import com.nana.boardback.dto.response.board.DeleteBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
@@ -18,5 +19,6 @@ public interface BoardService {
     ResponseEntity<? super GetFavoriteListResponseDto> getFavoriteList(Integer boardNumber);
     ResponseEntity<? super GetCommentListResponseDto> getCommentList(Integer boardNumber);
     ResponseEntity<? super IncreaseViewCountResponseDto> increaseViewCount(Integer boardNumber);
+    ResponseEntity<? super DeleteBoardResponseDto> deleteBoard(Integer boardNumber,String email);
     ResponseEntity<? super PostCommentResponseDto> postComment(PostCommentRequestDto dto,String email,Integer boardNumber);
 }

@@ -9,21 +9,25 @@ import {useLoginUserStore} from "../../../stores";
 import {useNavigate, useParams} from "react-router-dom";
 import {BOARD_PATH, BOARD_UPDATE_PATH, MAIN_PATH, USER_PATH} from "../../../constants";
 import {
+  deleteBoardsRequest,
   getBoardRequest,
   getCommentListRequest,
   getFavoriteListRequest,
-  increaseViewCountRequest, putFavoriteRequest
+  increaseViewCountRequest, postCommentRequest, putFavoriteRequest
 } from "../../../apis";
 import GetBoardResponseDTO from "../../../apis/response/board/get-board.response.dto";
 import ResponseDto from "../../../apis/response/response.dto";
 import IncreaseViewCountResponseDto from "../../../apis/response/board/increase-view-count.response.dto";
 import dayjs from "dayjs";
 import {
+  DeleteBoardResponseDto,
   GetCommentListResponseDto,
   GetFavoriteListResponseDTO,
   PutFavoriteResponseDto
 } from "../../../apis/response/board";
 import {useCookies} from "react-cookie";
+import {PostCommentRequestDto} from "../../../apis/request/board";
+import PostCommentResponseDto from "../../../apis/response/board/post-comment.response.dto";
 
 export default function BoardDetail() {
   const {loginUser}=useLoginUserStore();
@@ -71,6 +75,20 @@ export default function BoardDetail() {
       setWriter(isWriter);
     }
 
+    const deleteBoardsResponse = (responseBody: DeleteBoardResponseDto | ResponseDto | null)=>{
+      if(!responseBody) return;
+      const { code } = responseBody;
+      if(code === 'VF') alert('잘못된 접근입니다.');
+      if(code === 'NU') alert('존재하지 않는 유저입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'AF') alert('인증에 실패했습니다.');
+      if(code === 'NP') alert('권한이 없습니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      navigator(MAIN_PATH());
+    }
+
     const onMoreButtonClick = () =>{
       setShowMore(!showMore);
     }
@@ -84,10 +102,10 @@ export default function BoardDetail() {
       navigator(BOARD_PATH()+'/'+BOARD_UPDATE_PATH(board.boardNumber));
     }
     const onDeleteButtonClick = () =>{
-      if(!board || !loginUser) return;
+      if(!board || !loginUser || !boardNumber) return;
       if(loginUser.email !== board.writerEmail) return;
-      //TODO:Delete Request
-      navigator(MAIN_PATH());
+
+      deleteBoardsRequest(boardNumber,cookies.accessToken).then(deleteBoardsResponse);
     }
 
 
@@ -131,7 +149,7 @@ export default function BoardDetail() {
           <div className='divider'></div>
           <div className='board-detail-top-main'>
             <div className='board-detail-main-text'>{board.content}</div>
-            {board.boardImageList.map(image =><img className='board-detail-main-image' src={image}/>)}
+            {board.boardImageList.map(image =><img alt='게시판 이미지' className='board-detail-main-image' src={image}/>)}
           </div>
         </div>
     );
@@ -188,6 +206,21 @@ export default function BoardDetail() {
         getFavoriteListRequest(boardNumber).then(getFavoriteListResponse);
 
       }
+      const postCommentResponse = (responseBody: PostCommentResponseDto | ResponseDto | null) =>{
+        if(!responseBody) return;
+        const { code } = responseBody;
+        if(code === 'VF') alert('잘못된 접근입니다.');
+        if(code === 'NU') alert('존재하지 않는 유저입니다.');
+        if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+        if(code === 'AF') alert('인증에 실패했습니다.');
+        if(code === 'DBE') alert('데이터베이스 오류입니다.');
+        if(code !== 'SU') return;
+
+        setComment('');
+        if(!boardNumber) return;
+        getCommentListRequest(boardNumber).then(getCommentListResponse);
+
+      }
 
     const isMounted = useRef(false);
 
@@ -214,8 +247,10 @@ export default function BoardDetail() {
       commentRef.current.style.height = `${commentRef.current.scrollHeight}px`;
     }
     const onAddComment = () =>{
-      if(!comment) return;
-      alert('!!');
+      if(!comment || !boardNumber || !loginUser || !cookies.accessToken) return;
+      const requestBody: PostCommentRequestDto = {content:comment};
+      postCommentRequest(boardNumber,requestBody,cookies.accessToken).then(postCommentResponse);
+
     }
 
     useEffect(() => {
