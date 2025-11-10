@@ -1,7 +1,6 @@
 import React, {ChangeEvent, useEffect, useRef, useState} from "react";
 import './style.css';
 import FavoriteItem from "../../../components/FavoriteItem";
-import {commentListMock, favoriteListMock} from "../../../mocks";
 import {Board, CommentListItem, FavoriteListItem} from "../../../types/interface";
 import CommentItem from "../../../components/CommentItem";
 import Pagination from "../../../components/Pagination";
@@ -9,15 +8,27 @@ import defaultProfileImage from 'assets/image/default-profile-image.png'
 import {useLoginUserStore} from "../../../stores";
 import {useNavigate, useParams} from "react-router-dom";
 import {BOARD_PATH, BOARD_UPDATE_PATH, MAIN_PATH, USER_PATH} from "../../../constants";
-import {getBoardRequest, increaseViewCountRequest} from "../../../apis";
+import {
+  getBoardRequest,
+  getCommentListRequest,
+  getFavoriteListRequest,
+  increaseViewCountRequest, putFavoriteRequest
+} from "../../../apis";
 import GetBoardResponseDTO from "../../../apis/response/board/get-board.response.dto";
 import ResponseDto from "../../../apis/response/response.dto";
 import IncreaseViewCountResponseDto from "../../../apis/response/board/increase-view-count.response.dto";
 import dayjs from "dayjs";
+import {
+  GetCommentListResponseDto,
+  GetFavoriteListResponseDTO,
+  PutFavoriteResponseDto
+} from "../../../apis/response/board";
+import {useCookies} from "react-cookie";
 
 export default function BoardDetail() {
   const {loginUser}=useLoginUserStore();
   const {boardNumber} = useParams();
+  const [cookies,setCookies] = useCookies();
 
   const navigator = useNavigate();
 
@@ -79,6 +90,7 @@ export default function BoardDetail() {
       navigator(MAIN_PATH());
     }
 
+
     useEffect(() => {
       if(!boardNumber) {
         navigator(MAIN_PATH());
@@ -125,6 +137,7 @@ export default function BoardDetail() {
     );
   };
 
+
   const BoardDetailBottom = () =>{
 
     const [favoriteList,setFavoriteList] = useState<FavoriteListItem[]>([]);
@@ -135,11 +148,58 @@ export default function BoardDetail() {
     const [comment,setComment] = useState<string>('');
     const commentRef = useRef<HTMLTextAreaElement | null>(null);
 
+    const getFavoriteListResponse = (responseBody: GetFavoriteListResponseDTO | ResponseDto | null)=> {
+      if(!responseBody) return;
+      const { code } = responseBody;
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      const { favoriteList } = responseBody as GetFavoriteListResponseDTO;
+      setFavoriteList(favoriteList);
+      if(!loginUser) {
+        setShowFavorite(false);
+        return;
+      }
+      const isFavorite = favoriteList.findIndex(favorite => favorite.email === loginUser.email) !==-1;
+      setFavorite(isFavorite);
+    }
+    const getCommentListResponse = (responseBody: GetCommentListResponseDto | ResponseDto | null) =>{
+      if(!responseBody) return;
+      const { code } = responseBody;
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      const { commentList } = responseBody as GetCommentListResponseDto;
+      setCommentList(commentList);
+      }
+      const putFavoriteResponse = (responseBody: PutFavoriteResponseDto | ResponseDto | null) =>{
+      if(!responseBody) return;
+        const { code } = responseBody;
+        if(code === 'VF') alert('잘못된 접근입니다.');
+        if(code === 'NU') alert('존재하지 않는 유저입니다.');
+        if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+        if(code === 'AF') alert('인증에 실패했습니다.');
+        if(code === 'DBE') alert('데이터베이스 오류입니다.');
+        if(code !== 'SU') return;
+
+        if(!boardNumber) return;
+        getFavoriteListRequest(boardNumber).then(getFavoriteListResponse);
+
+      }
+
     const isMounted = useRef(false);
 
-    const onFavoriteClick = () =>{
+    const onFavoriteClick = () => {
+      if (!loginUser || !cookies.accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+      if (!boardNumber) return;
       setFavorite(!isFavorite);
-    }
+      putFavoriteRequest(boardNumber, cookies.accessToken).then(putFavoriteResponse);
+    };
     const onShowFavoriteButtonClick = () =>{
       setShowFavorite(!showFavorite);
     }
@@ -159,8 +219,9 @@ export default function BoardDetail() {
     }
 
     useEffect(() => {
-      setFavoriteList(favoriteListMock);
-      setCommentList(commentListMock);
+      if(!boardNumber) return;
+      getFavoriteListRequest(boardNumber).then(getFavoriteListResponse)
+      getCommentListRequest(boardNumber).then(getCommentListResponse)
     }, [boardNumber]);
 
     useEffect(() => {
@@ -222,7 +283,7 @@ export default function BoardDetail() {
                 <div className='board-detail-bottom-comment-container'>
                   <div className='board-detail-bottom-comment-title'>{'comment '}<span className='emphasis'>{commentList.length}</span></div>
                   <div className='board-detail-bottom-comment-list-container'>
-                    {commentList.map(item =><CommentItem commentListItem={item}/>)}
+                    {commentList.map(item => <CommentItem commentListItem={item} />)}
                   </div>
                 </div>
 
