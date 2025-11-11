@@ -92,5 +92,4 @@ public class BoardController {
         ResponseEntity<? super DeleteBoardResponseDto> response = boardService.deleteBoard(boardNumber, email);
         return response;
     }
-
 }
