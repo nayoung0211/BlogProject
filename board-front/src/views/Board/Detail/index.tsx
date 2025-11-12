@@ -28,6 +28,7 @@ import {
 import {useCookies} from "react-cookie";
 import {PostCommentRequestDto} from "../../../apis/request/board";
 import PostCommentResponseDto from "../../../apis/response/board/post-comment.response.dto";
+import {usePagination} from "../../../hooks";
 
 export default function BoardDetail() {
   const {loginUser}=useLoginUserStore();
@@ -157,14 +158,15 @@ export default function BoardDetail() {
 
 
   const BoardDetailBottom = () =>{
-
+    const commentRef = useRef<HTMLTextAreaElement | null>(null);
+    const {currentPage, setCurrentPage, currentSection, setCurrentSection, viewList, viewPageList, totalSection, setTotalList} = usePagination<CommentListItem>(3);
     const [favoriteList,setFavoriteList] = useState<FavoriteListItem[]>([]);
-    const [commentList,setCommentList] = useState<CommentListItem[]>([]);
     const [isFavorite,setFavorite] = useState<boolean>(false);
     const [showFavorite,setShowFavorite] = useState<boolean>(false);
     const [showComment,setShowComment] = useState<boolean>(false);
     const [comment,setComment] = useState<string>('');
-    const commentRef = useRef<HTMLTextAreaElement | null>(null);
+    const [totalCommentCount,setTotalCommentCount] = useState<number>(0);
+
 
     const getFavoriteListResponse = (responseBody: GetFavoriteListResponseDTO | ResponseDto | null)=> {
       if(!responseBody) return;
@@ -190,7 +192,8 @@ export default function BoardDetail() {
       if(code !== 'SU') return;
 
       const { commentList } = responseBody as GetCommentListResponseDto;
-      setCommentList(commentList);
+      setTotalList(commentList);
+      setTotalCommentCount(commentList.length);
       }
       const putFavoriteResponse = (responseBody: PutFavoriteResponseDto | ResponseDto | null) =>{
       if(!responseBody) return;
@@ -294,7 +297,7 @@ export default function BoardDetail() {
               <div className='icon-button'>
                 <div className='icon comment-icon'></div>
               </div>
-              <div className='board-detail-bottom-button-text'>{`comment ${commentList.length}`}</div>
+              <div className='board-detail-bottom-button-text'>{`comment ${totalCommentCount}`}</div>
               <div className='icon-button' onClick={onShowCommentButtonClick}>
                 {showComment ?
                     <div className='icon up-light-icon'></div> :
@@ -316,15 +319,22 @@ export default function BoardDetail() {
           {showComment &&
               <div className='board-detail-bottom-comment-box'>
                 <div className='board-detail-bottom-comment-container'>
-                  <div className='board-detail-bottom-comment-title'>{'comment '}<span className='emphasis'>{commentList.length}</span></div>
+                  <div className='board-detail-bottom-comment-title'>{'comment '}<span className='emphasis'>{totalCommentCount}</span></div>
                   <div className='board-detail-bottom-comment-list-container'>
-                    {commentList.map(item => <CommentItem commentListItem={item} />)}
+                    {viewList.map(item => <CommentItem commentListItem={item} />)}
                   </div>
                 </div>
 
                 <div className='divider'></div>
                 <div className='board-detail-bottom-comment-pagination-box'>
-                  <Pagination/>
+                  <Pagination
+                  currentPage={currentPage}
+                  currentSection={currentSection}
+                  setCurrentSection={setCurrentSection}
+                  setCurrentPage={setCurrentPage}
+                  viewPageList={viewPageList}
+                  totalSection={totalSection}
+                  />
                 </div>
                 {loginUser !== null &&
                 <div className='board-detail-bottom-comment-input-box'>

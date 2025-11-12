@@ -174,4 +174,10 @@
 .comment-icon{
   background-image: url(assets/image/chat-light.png);
 }
+.expand-left-icon{
+  background-image: url(assets/image/expand-left.png);
+}
+.expand-right-icon{
+  background-image: url(assets/image/expand-right.png);
+}
 
