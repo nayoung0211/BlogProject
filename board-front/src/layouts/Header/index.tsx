@@ -11,13 +11,12 @@ import {
 } from "../../constants";
 import {useCookies} from "react-cookie";
 import {useBoardStore, useLoginUserStore} from "../../stores";
-import * as path from "node:path";
-import {fileUploadRequest, postBoardRequest} from "../../apis";
-import {PostBoardRequestDTO} from "../../apis/request/board";
+import {fileUploadRequest, patchBoardRequest, postBoardRequest} from "../../apis";
+import {PatchBoardRequestDTO, PostBoardRequestDTO} from "../../apis/request/board";
 import ResponseDto from "../../apis/response/response.dto";
 
 export function Header() {
-  const {loginUser, setLoginUser, resetLoginUser} = useLoginUserStore();
+  const {loginUser, resetLoginUser} = useLoginUserStore();
   const {pathname} = useLocation();
   const [cookies, setCookies] = useCookies();
 
@@ -128,7 +127,10 @@ export function Header() {
 
   const UploadButton = () => {
 
+    const {boardNumber} = useParams();
     const {title, content, boardImageFileList, resetBoard} = useBoardStore();
+
+    // 게시물 작성 응답 처리
     const postBoardResponse = (responseBody: PostBoardRequestDTO | ResponseDto | null) => {
       if (!responseBody) return;
       if("code" in responseBody){
@@ -146,12 +148,30 @@ export function Header() {
       navigate(USER_PATH(email));
     }
 
+    // 게시물 수정 응답 처리
+    const patchBoardResponse = (responseBody: PatchBoardRequestDTO | ResponseDto | null) => {
+      if (!responseBody) return;
+      if("code" in responseBody){
+        const { code } = responseBody;
+        if(code === 'AF' || code === 'NU' || code === 'NB' || code === 'NP'){
+          navigate(AUTH_PATH());
+        }
+        if(code === 'VF') alert('Enter title and content');
+        if(code === 'DBE') alert('Database error');
+        if(code !== 'SU') return;
+      }
+      if(!boardNumber) return;
+      navigate(BOARD_PATH()+'/'+BOARD_DETAIL_PATH(boardNumber));
+    }
+
+    // 업로드/수정 버튼 클릭
     const onUploadButtonClick = async () => {
       const accessToken = cookies.accessToken;
       if (!accessToken) return;
 
       const boardImageList: string[] = [];
 
+      // 파일 업로드 처리
       for (const file of boardImageFileList) {
         const data = new FormData();
         data.append('file', file);
@@ -159,10 +179,25 @@ export function Header() {
         const url = await fileUploadRequest(data);
         if (url) boardImageList.push(url);
       }
-      const requestBody: PostBoardRequestDTO = {
-        title, content, boardImageList
+
+      const isWritePage = pathname === BOARD_PATH()+'/'+BOARD_WRITE_PATH();
+
+      // 작성 페이지
+      if(isWritePage){
+        const requestBody: PostBoardRequestDTO = {
+          title,content,boardImageList
+        }
+        postBoardRequest(requestBody,accessToken).then(postBoardResponse);
       }
-      postBoardRequest(requestBody, accessToken).then(postBoardResponse);
+      // 수정 페이지
+      else{
+        if(!boardNumber) return;
+        const requestBody: PatchBoardRequestDTO = {
+          title,content,boardImageList
+        }
+        // boardNumber를 Number()로 변환하여 PATCH 요청
+        patchBoardRequest(Number(boardNumber),requestBody,accessToken).then(patchBoardResponse);
+      }
     };
 
     if (title && content) {

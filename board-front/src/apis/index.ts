@@ -3,11 +3,11 @@ import axios from "axios";
 import ResponseDto from "./response/response.dto";
 import {SignInResponseDto, SignUpResponseDto} from "./response/auth";
 import {GetSignInUserResponseDto} from "./response/user";
-import {PostBoardRequestDTO, PostCommentRequestDto} from "./request/board";
+import {PatchBoardRequestDTO, PostBoardRequestDTO, PostCommentRequestDto} from "./request/board";
 import {
   DeleteBoardResponseDto,
   GetBoardResponseDTO, GetCommentListResponseDto,
-  GetFavoriteListResponseDTO,
+  GetFavoriteListResponseDTO, PatchBoardResponseDTO,
   PostBoardResponseDTO
 } from "./response/board";
 import IncreaseViewCountResponseDto from "./response/board/increase-view-count.response.dto";
@@ -66,6 +66,7 @@ const POST_BOARD_URL = () =>`${API_DOMAIN}/board`;
 const POST_COMMENT_URL = (boardNumber: number | string)  => `${API_DOMAIN}/board/${boardNumber}/comment`;
 const PUT_FAVORITE_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite`;
 const DELETE_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
+const PATCH_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
 
 export const getBoardRequest = async (boardNumber: number | string)=>{
   const result = await axios.get(GET_BOARD_URL(boardNumber))
@@ -140,6 +141,20 @@ export const postCommentRequest = async (boardNumber: number | string, requestBo
   const result = await axios.post(POST_COMMENT_URL(boardNumber), requestBody, authorization(accessToken))
   .then(response => {
     const responseBody : PostCommentResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+}
+
+export const patchBoardRequest = async (boardNumber: number | string, requestBody: PatchBoardRequestDTO, accessToken: string) => {
+  const result = await axios.patch(PATCH_BOARD_URL(boardNumber), requestBody, authorization(accessToken))
+  .then(response => {
+    const responseBody: PostBoardResponseDTO = response.data;
     return responseBody;
   })
   .catch(error => {

@@ -1,6 +1,8 @@
 package com.nana.boardback.entity;
 
+import com.nana.boardback.dto.request.board.PatchBoardRequestDto;
 import com.nana.boardback.dto.request.board.PostBoardRequestDto;
+import com.nana.boardback.dto.response.board.PatchBoardResponseDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -53,5 +55,9 @@ public class BoardEntity {
     }
     public void increaseViewCount() {
         this.viewCount++;
+    }
+    public void patchBoard(PatchBoardRequestDto dto){
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
     }
 }

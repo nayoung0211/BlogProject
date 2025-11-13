@@ -1,5 +1,6 @@
 package com.nana.boardback.controller;
 
+import com.nana.boardback.dto.request.board.PatchBoardRequestDto;
 import com.nana.boardback.dto.request.board.PostBoardRequestDto;
 import com.nana.boardback.dto.request.board.PostCommentRequestDto;
 import com.nana.boardback.dto.response.board.DeleteBoardResponseDto;
@@ -7,6 +8,7 @@ import com.nana.boardback.dto.response.board.GetBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
 import com.nana.boardback.dto.response.board.IncreaseViewCountResponseDto;
+import com.nana.boardback.dto.response.board.PatchBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostCommentResponseDto;
 import com.nana.boardback.dto.response.board.PutFavoriteResponseDto;
@@ -90,6 +92,15 @@ public class BoardController {
         @AuthenticationPrincipal String email
     ){
         ResponseEntity<? super DeleteBoardResponseDto> response = boardService.deleteBoard(boardNumber, email);
+        return response;
+    }
+    @PatchMapping("/{boardNumber}")
+    public ResponseEntity<? super PatchBoardResponseDto> patchBoard(
+        @RequestBody @Valid PatchBoardRequestDto requestBody,
+        @PathVariable("boardNumber") Integer boardNumber,
+        @AuthenticationPrincipal String email
+    ){
+        ResponseEntity<? super PatchBoardResponseDto> response = boardService.patchBoard(requestBody,boardNumber,email);
         return response;
     }
 }
