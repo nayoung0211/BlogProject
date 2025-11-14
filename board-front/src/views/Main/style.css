@@ -1,0 +1,45 @@
+#main-top-wrapper{
+  padding: 80px 0 40px;
+  display: flex;
+  justify-content: center;
+
+}
+.main-top-container{
+  width: 1200px;
+  min-width: 1200px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  align-items: center;
+}
+.main-top-title{
+  color: #ff4f79;
+  font-family: GimhaeGaya, cursive;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 140%;
+
+  letter-spacing: -0.8px;
+  white-space: pre-wrap;
+  text-align: center;
+}
+.main-top-contents-box{
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  width: 100%;
+}
+.main-top-contents-title{
+  font-family: GimhaeGaya, cursive;
+  color: #f86689;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 140%;
+}
+.main-top-contents{
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}

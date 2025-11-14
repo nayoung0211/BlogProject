@@ -20,7 +20,7 @@ export default function Main() {
     return (
         <div id='main-top-wrapper'>
           <div className='main-top-container'>
-            <div className='main-top-intro'>{'Nawoong Board에서 \n 다양한 이야기를 나눠보세요.'}</div>
+            <div className='main-top-title'>{'Nawoong Board에서 \n 다양한 이야기를 나눠보세요.'}</div>
             <div className='main-top-contents-box'>
               <div className='main-top-contents-title'>{'주간 TOP3 게시글'}</div>
               <div className='main-top-contents'>
