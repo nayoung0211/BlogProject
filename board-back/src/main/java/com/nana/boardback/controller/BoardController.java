@@ -7,6 +7,8 @@ import com.nana.boardback.dto.response.board.DeleteBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
+import com.nana.boardback.dto.response.board.GetLatestBoardListResponseDto;
+import com.nana.boardback.dto.response.board.GetTop3BoardListResponseDto;
 import com.nana.boardback.dto.response.board.IncreaseViewCountResponseDto;
 import com.nana.boardback.dto.response.board.PatchBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
@@ -101,6 +103,16 @@ public class BoardController {
         @AuthenticationPrincipal String email
     ){
         ResponseEntity<? super PatchBoardResponseDto> response = boardService.patchBoard(requestBody,boardNumber,email);
+        return response;
+    }
+    @GetMapping("/latest-list")
+    public ResponseEntity<? super GetLatestBoardListResponseDto> getLatestList(){
+        ResponseEntity<? super GetLatestBoardListResponseDto> response = boardService.getLatestBoardList();
+        return response;
+    }
+    @GetMapping("/top-3")
+    public ResponseEntity<? super GetTop3BoardListResponseDto> getTop3List(){
+        ResponseEntity<? super GetTop3BoardListResponseDto> response = boardService.getTop3BoardList();
         return response;
     }
 }

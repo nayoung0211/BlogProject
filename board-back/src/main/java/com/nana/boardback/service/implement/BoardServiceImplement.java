@@ -8,15 +8,19 @@ import com.nana.boardback.dto.response.board.DeleteBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetBoardResponseDto;
 import com.nana.boardback.dto.response.board.GetCommentListResponseDto;
 import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
+import com.nana.boardback.dto.response.board.GetLatestBoardListResponseDto;
+import com.nana.boardback.dto.response.board.GetTop3BoardListResponseDto;
 import com.nana.boardback.dto.response.board.IncreaseViewCountResponseDto;
 import com.nana.boardback.dto.response.board.PatchBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostCommentResponseDto;
 import com.nana.boardback.dto.response.board.PutFavoriteResponseDto;
 import com.nana.boardback.entity.BoardEntity;
+import com.nana.boardback.entity.BoardListViewEntity;
 import com.nana.boardback.entity.CommentEntity;
 import com.nana.boardback.entity.FavoriteEntity;
 import com.nana.boardback.entity.ImageEntity;
+import com.nana.boardback.repository.BoardListViewRepository;
 import com.nana.boardback.repository.BoardRepository;
 import com.nana.boardback.repository.CommentRepository;
 import com.nana.boardback.repository.FavoriteRepository;
@@ -26,7 +30,11 @@ import com.nana.boardback.repository.resultSet.GetBoardResultSet;
 import com.nana.boardback.repository.resultSet.GetCommentListResultSet;
 import com.nana.boardback.repository.resultSet.GetFavoriteResultSet;
 import com.nana.boardback.service.BoardService;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +48,7 @@ public class BoardServiceImplement implements BoardService {
     private final ImageRepository imageRepository;
     private final FavoriteRepository favoriteRepository;
     private final CommentRepository  commentRepository;
+    private final BoardListViewRepository boardListViewRepository;
 
     @Override
     public ResponseEntity<? super GetBoardResponseDto> getBoard(Integer boardNumber) {
@@ -170,6 +179,36 @@ public class BoardServiceImplement implements BoardService {
             return ResponseDto.databaseError();
         }
         return DeleteBoardResponseDto.success();
+    }
+
+    @Override
+    public ResponseEntity<? super GetLatestBoardListResponseDto> getLatestBoardList() {
+        List<BoardListViewEntity>  boardEntities = new ArrayList<>();
+        try{
+            boardEntities = boardListViewRepository.findByOrderByWriteDatetimeDesc();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetLatestBoardListResponseDto.success(boardEntities);
+    }
+
+    @Override
+    public ResponseEntity<? super GetTop3BoardListResponseDto> getTop3BoardList() {
+        List<BoardListViewEntity>  boardEntities = new ArrayList<>();
+        try{
+            Date beforeWeek = Date.from(Instant.now().minus(7, ChronoUnit.DAYS));
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String sevenDaysAgo =  simpleDateFormat.format(beforeWeek);
+            boardEntities = boardListViewRepository.findTop3ByWriteDatetimeGreaterThanOrderByFavoriteCountDescCommentCountDescViewCountDescWriteDatetimeDesc(sevenDaysAgo);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetTop3BoardListResponseDto.success(boardEntities);
     }
 
     @Override

@@ -9,7 +9,7 @@ interface Props {
   boardListItem : BoardListItemType
 }
 //components : Board List Item 컴포넌트
-export default function BoardListItem({boardListItem }: Props){
+export default function BoardItem({boardListItem }: Props){
 
   //properties
   const {boardNumber,title,content,boardTitleImage}= boardListItem;
