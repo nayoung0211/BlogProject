@@ -1,7 +1,9 @@
 package com.nana.boardback.repository;
 
+import com.nana.boardback.dto.response.search.GetRelationListResponseDto;
 import com.nana.boardback.entity.SearchLogEntity;
 import com.nana.boardback.repository.resultSet.GetPopularResultSet;
+import com.nana.boardback.repository.resultSet.GetRelationListResultSet;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +23,16 @@ public interface SearchLogRepository extends JpaRepository<SearchLogEntity,Integ
         nativeQuery = true
     )
     List<GetPopularResultSet> getPopularList();
+
+    @Query(
+        value =
+            "SELECT relation_word as searchWord, count(relation_word) AS count "+
+                "FROM search_log "+
+                "WHERE search_word = ?1 "+
+                "GROUP BY relation_word IS NOT NULL "+
+                "ORDER BY count DESC "+
+                "LIMIT 15 ",
+        nativeQuery = true
+    )
+    List<GetRelationListResultSet> getRelationList(String searchWord);
 }

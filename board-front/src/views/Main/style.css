@@ -103,4 +103,6 @@
 }
 .main-bottom-pagination-box{
   margin-top: 60px;
+  justify-content: center;
+  display: flex;
 }

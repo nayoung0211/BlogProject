@@ -2,8 +2,10 @@ package com.nana.boardback.service.implement;
 
 import com.nana.boardback.dto.response.ResponseDto;
 import com.nana.boardback.dto.response.search.GetPopularListResponseDto;
+import com.nana.boardback.dto.response.search.GetRelationListResponseDto;
 import com.nana.boardback.repository.SearchLogRepository;
 import com.nana.boardback.repository.resultSet.GetPopularResultSet;
+import com.nana.boardback.repository.resultSet.GetRelationListResultSet;
 import com.nana.boardback.service.SearchService;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,5 +32,17 @@ public class SearchServiceImplement implements SearchService {
             return ResponseDto.databaseError();
         }
         return  GetPopularListResponseDto.success(resultSets);
+    }
+    @Override
+    public ResponseEntity<? super GetRelationListResponseDto> getRelationList(String searchWord) {
+        List<GetRelationListResultSet> resultSets = new ArrayList<>();
+        try{
+            resultSets = searchLogRepository.getRelationList(searchWord);
+
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetRelationListResponseDto.success(resultSets);
     }
 }
