@@ -7,12 +7,14 @@ import {PatchBoardRequestDTO, PostBoardRequestDTO, PostCommentRequestDto} from "
 import {
   DeleteBoardResponseDto,
   GetBoardResponseDTO, GetCommentListResponseDto,
-  GetFavoriteListResponseDTO, PatchBoardResponseDTO,
+  GetFavoriteListResponseDTO, GetLatestBoardListResponseDto,
+  GetTop3BoardListResponseDto, PatchBoardResponseDTO,
   PostBoardResponseDTO
 } from "./response/board";
 import IncreaseViewCountResponseDto from "./response/board/increase-view-count.response.dto";
 import {FavoriteListItem} from "../types/interface";
 import PostCommentResponseDto from "./response/board/post-comment.response.dto";
+import {GetPopularListResponseDto} from "./response/search";
 
 const DOMAIN = 'http://localhost:4000';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
@@ -67,6 +69,8 @@ const POST_COMMENT_URL = (boardNumber: number | string)  => `${API_DOMAIN}/board
 const PUT_FAVORITE_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite`;
 const DELETE_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
 const PATCH_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
+const GET_LATEST_BOARD_LIST_URL = () => `${API_DOMAIN}/board/latest-list`;
+const GET_TOP_3_BOARD_LIST_URL = () => `${API_DOMAIN}/board/top-3`;
 
 export const getBoardRequest = async (boardNumber: number | string)=>{
   const result = await axios.get(GET_BOARD_URL(boardNumber))
@@ -81,6 +85,34 @@ export const getBoardRequest = async (boardNumber: number | string)=>{
   });
   return result;
 }
+export const getLatestBoardListRequest = async () =>{
+  const result = await axios.get(GET_LATEST_BOARD_LIST_URL())
+  .then(response=>{
+    const responseBody: GetLatestBoardListResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+};
+
+export const getTop3BoardListRequest = async () =>{
+  const result = await axios.get(GET_TOP_3_BOARD_LIST_URL())
+  .then(response=>{
+    const responseBody: GetTop3BoardListResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+};
+
 export const increaseViewCountRequest = async (boardNumber: number | string)=>{
   const result = await axios.get(INCREASE_VIEW_COUNT_URL(boardNumber))
   .then(response=>{
@@ -195,6 +227,22 @@ export const deleteBoardsRequest = async(boardNumber: number | string,accessToke
   return result;
 }
 
+
+const GET_POPULAR_LIST_URL = () => `${API_DOMAIN}/search/popular-list`;
+
+export const getPopularListRequest = async () =>{
+  const result = await axios.get(GET_POPULAR_LIST_URL())
+  .then(response => {
+    const responseBody: GetPopularListResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+}
 
 
 const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/user`;

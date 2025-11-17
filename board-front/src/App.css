@@ -6,6 +6,21 @@
 .emphasis{
   font-weight: bolder;
 }
+.word-badge{
+  display: inline-flex;
+  padding: 6px 20px;
+  border: 2px solid #ff89a2;
+  border-radius: 30px;
+  color: gray;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+}
+.word-badge:hover{
+  background-color: #fdd1d8;
+  cursor: pointer;
+}
 
 .black-button{
   border-radius: 46px;

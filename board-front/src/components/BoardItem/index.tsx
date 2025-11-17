@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './style.css';
 import type BoardListItemType from '../../types/interface/board-list-item.interface';
 import DefaultProfileImage from '../../assets/image/default-profile-image.png';
+import {BOARD_DETAIL_PATH, BOARD_PATH} from "../../constants";
 
 
 interface Props {
@@ -21,7 +22,7 @@ export default function BoardItem({boardListItem }: Props){
 
   //event handler : 게시물 아이템 클릭 이벤트 처리 함수
   const onClickHandler = () =>{
-    navigator(boardNumber);
+    navigator(BOARD_PATH()+'/'+BOARD_DETAIL_PATH(boardNumber));
   }
   //render : Board List Item 컴포넌트 렌더링
   return (

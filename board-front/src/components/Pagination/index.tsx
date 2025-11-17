@@ -38,7 +38,7 @@ export default function Pagination(props: Props) {
       <div id='pagination-wrapper'>
         <div className='pagination-change-link-box'>
           <div className='icon-box-small'>
-          <div className='icon expand-left-icon'></div>
+            <div className='icon expand-left-icon'></div>
           </div>
           <div className='pagination-change-link-text' onClick={onPreviousClick}>{'Pre'}</div>
         </div>
@@ -51,9 +51,9 @@ export default function Pagination(props: Props) {
         <div className='pagination-divider'>{'\|'}</div>
         <div className='pagination-change-link-box'>
           <div className='pagination-change-link-text' onClick={onNextClick}>{'Next'}</div>
-        <div className='icon-box-small'>
-          <div className='icon expand-right-icon'></div>
-        </div>
+          <div className='icon-box-small'>
+            <div className='icon expand-right-icon'></div>
+          </div>
         </div>
       </div>
   )

@@ -1,9 +1,9 @@
 import React from "react";
-import App from "../../App";
 import './style.css'
 import defaultProfileImage from '../../assets/image/default-profile-image.png';
 import {BoardListItem} from "../../types/interface";
 import {useNavigate} from "react-router-dom";
+import {BOARD_DETAIL_PATH, BOARD_PATH} from "../../constants";
 
 interface Props {
   top3ListItem: BoardListItem
@@ -18,7 +18,7 @@ export default function Top3Item({top3ListItem}: Props) {
 
   const navigator = useNavigate();
   const onClick = () =>{
-    navigator(boardNumber);
+    navigator(BOARD_PATH()+'/'+BOARD_DETAIL_PATH(boardNumber));
   }
   //컴포넌트 렌더링
   return (
