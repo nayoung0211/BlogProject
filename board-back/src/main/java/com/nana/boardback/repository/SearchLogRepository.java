@@ -26,12 +26,12 @@ public interface SearchLogRepository extends JpaRepository<SearchLogEntity,Integ
 
     @Query(
         value =
-            "SELECT relation_word as searchWord, count(relation_word) AS count "+
-                "FROM search_log "+
-                "WHERE search_word = ?1 "+
-                "GROUP BY relation_word IS NOT NULL "+
-                "ORDER BY count DESC "+
-                "LIMIT 15 ",
+            "SELECT relation_word as searchWord, count(relation_word) AS count " +
+                "FROM search_log " +
+                "WHERE search_word = ?1 AND relation_word IS NOT NULL " +
+                "GROUP BY relation_word " +
+                "ORDER BY count DESC " +
+                "LIMIT 15",
         nativeQuery = true
     )
     List<GetRelationListResultSet> getRelationList(String searchWord);

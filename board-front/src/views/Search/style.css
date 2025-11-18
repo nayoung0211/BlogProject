@@ -1,4 +1,5 @@
 #search-wrapper{
+  min-height: 1080px;
   padding: 40px 0;
   display: flex;
   justify-content: center;
@@ -52,4 +53,60 @@
   flex-direction: column;
 
   gap: 16px;
+}
+.search-contents-nothing{
+  margin-top: 82px;
+  font-family: GimhaeGaya, cursive;
+  height: 310px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: gray;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 140%;
+}
+.search-relation-box{
+  grid-column:  2/3;
+}
+.search-relation-card{
+  padding: 24px;
+  background: white;
+}
+.search-relation-card-container{
+  display: flex;
+  flex-direction: column;
+
+  gap: 24px;
+}
+.search-relation-card-title{
+  font-family: GimhaeGaya, cursive;
+  color: #f86689;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 140%;
+}
+.search-relation-card-contents{
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 12px;
+}
+.search-relation-card-contents-nothing{
+  font-family: GimhaeGaya, cursive;
+  height: 310px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: gray;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 140%;
+}
+.search-pagination-box{
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
 }

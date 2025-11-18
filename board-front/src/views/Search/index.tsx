@@ -1,38 +1,63 @@
 import React, {useEffect, useState} from "react";
 import './style.css';
 import {useNavigate, useParams} from "react-router-dom";
-import * as sea from "node:sea";
 import {BoardListItem} from "../../types/interface";
-import {latestBoardListMock} from "../../mocks";
 import BoardItem from "../../components/BoardItem";
 import {SEARCH_PATH} from "../../constants";
 import Pagination from "../../components/Pagination";
+import {getRelationListRequest, getSearchBoardListRequest} from "../../apis";
+import {GetSearchBoardListResponseDto} from "../../apis/response/board";
+import {usePagination} from "../../hooks";
+import ResponseDto from "../../apis/response/response.dto";
+import {GetRelatedBoardListResponseDto} from "../../apis/response/search";
 
 export default function Search() {
 
-  //state searchWord path //
   const { searchWord } = useParams();
-
-  //검색 게시물 개수 상태 //
-  const [count,setCount] = useState<number>(2);
-
-  //검색 게시물 리스트 상태 //
-  const [searchBoardList,setSearchBoardList] = useState<BoardListItem[]>([]);
-
-  //관련 검색어 리스트 상태 //
+  const [count,setCount] = useState<number>(0); // 기본값 0
+  const [preSearchWord,setPreSearchWord] = useState<string | null>(null);
   const [relationList,setRelationList] = useState<string[]>([]);
-
   const navigate = useNavigate();
 
   const onRelationWordClick = (word: string) =>{
     navigate(SEARCH_PATH(word));
   }
 
+  const getSearchBoardListResponse = (responseBody: GetSearchBoardListResponseDto | ResponseDto | null) =>{
+    if(!responseBody) return;
+    const { code } = responseBody;
+    if(code === 'DBE') alert('DataBase Error');
+    if(code !== 'SU') return;
+
+    if(!searchWord) return;
+    const { searchList = [] } = responseBody as GetSearchBoardListResponseDto; // 안전하게 기본값 []
+    setTotalList(searchList);
+    setCount(searchList.length);
+    setPreSearchWord(searchWord);
+  }
+
+  const getRelationListResponse = (responseBody: GetRelatedBoardListResponseDto | ResponseDto | null)=> {
+    if(!responseBody) return;
+    const { code } = responseBody;
+    if(code === 'DBE') alert('DataBase Error');
+    if(code !== 'SU') return;
+
+    const { relationWordList = [] } = responseBody as GetRelatedBoardListResponseDto; // 기본값 []
+    setRelationList(relationWordList);
+  }
+
+  const {
+    currentPage,setCurrentPage,currentSection,setCurrentSection,viewList,viewPageList,totalSection,setTotalList
+  } = usePagination<BoardListItem>(5);
+
   useEffect(() => {
-    setSearchBoardList(latestBoardListMock);
+    if(!searchWord) return;
+    getSearchBoardListRequest(searchWord,preSearchWord).then(getSearchBoardListResponse);
+    getRelationListRequest(searchWord).then(getRelationListResponse);
   },[searchWord]);
 
   if(!searchWord) return(<></>)
+
   return (
       <div id='search-wrapper'>
         <div className='search-container'>
@@ -42,27 +67,33 @@ export default function Search() {
           </div>
           <div className='search-contents-box'>
             {count === 0 ? <div className='search-contents-nothing'>{'검색 결과가 없습니다.'}</div> :
-                <div className='search-contents'>{searchBoardList.map(boardListItem => <BoardItem boardListItem={boardListItem}/>)}</div>
+                <div className='search-contents'>
+                  {viewList?.map(boardListItem => <BoardItem key={boardListItem.boardNumber} boardListItem={boardListItem}/>)}
+                </div>
             }
             <div className='search-relation-box'>
               <div className='search-relation-card'>
                 <div className='search-relation-card-container'>
-                  <div className='search-relation-card-title'></div>
-                  <div className='search-relation-card-contents'>
-                    {relationList.length === 0?
-                    <div className='search-relation-card-contents-nothing'></div> :
-                        <div className='search-relation-card-contents'>
-                        {relationList.map(word => <div className='word-badge' onClick={()=> onRelationWordClick(word)}>{word}</div>)}
-                        </div>
-                    }
-                  </div>
+                  <div className='search-relation-card-title'>{'관련 검색어'}</div>
+                  {relationList?.length === 0 ?
+                      <div className='search-relation-card-contents-nothing'>{'관련 검색어가 없습니다.'}</div> :
+                      <div className='search-relation-card-contents'>
+                        {relationList?.map((word, idx) => <div key={idx} className='word-badge' onClick={()=> onRelationWordClick(word)}>{word}</div>)}
+                      </div>
+                  }
                 </div>
               </div>
             </div>
           </div>
           <div className='search-pagination-box'>
-            {/*<Pagination/>*/}
-            </div>
+            {count !== 0 && <Pagination
+                currentPage = {currentPage}
+                currentSection={currentSection}
+                setCurrentPage={setCurrentPage}
+                setCurrentSection={setCurrentSection}
+                viewPageList={viewPageList}
+                totalSection={totalSection}/>}
+          </div>
         </div>
       </div>
   )

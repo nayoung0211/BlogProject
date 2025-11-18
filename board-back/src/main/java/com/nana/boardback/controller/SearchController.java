@@ -21,7 +21,7 @@ public class SearchController {
         ResponseEntity<? super GetPopularListResponseDto> response = searchService.getPopularList();
         return response;
     }
-    @GetMapping("/{earchWord}/relation-list")
+    @GetMapping("/{searchWord}/relation-list")
     public ResponseEntity<? super GetRelationListResponseDto> getRelationList(@PathVariable("searchWord") String searchWord){
         ResponseEntity<? super GetRelationListResponseDto> response = searchService.getRelationList(searchWord);
         return response;
