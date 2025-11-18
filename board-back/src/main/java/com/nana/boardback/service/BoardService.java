@@ -10,6 +10,7 @@ import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
 import com.nana.boardback.dto.response.board.GetLatestBoardListResponseDto;
 import com.nana.boardback.dto.response.board.GetSearchBoardListResponseDto;
 import com.nana.boardback.dto.response.board.GetTop3BoardListResponseDto;
+import com.nana.boardback.dto.response.board.GetUserBoardListResponseDto;
 import com.nana.boardback.dto.response.board.IncreaseViewCountResponseDto;
 import com.nana.boardback.dto.response.board.PatchBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
@@ -29,5 +30,6 @@ public interface BoardService {
     ResponseEntity<? super GetTop3BoardListResponseDto> getTop3BoardList();
     ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(String searchWord,String preSearchWord);
     ResponseEntity<? super PatchBoardResponseDto> patchBoard(PatchBoardRequestDto dto,Integer boardNumber,String email);
+    ResponseEntity<? super GetUserBoardListResponseDto> getUserBoardList(String email);
     ResponseEntity<? super PostCommentResponseDto> postComment(PostCommentRequestDto dto,String email,Integer boardNumber);
 }

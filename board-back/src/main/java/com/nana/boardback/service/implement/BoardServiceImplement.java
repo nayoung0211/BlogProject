@@ -11,11 +11,13 @@ import com.nana.boardback.dto.response.board.GetFavoriteListResponseDto;
 import com.nana.boardback.dto.response.board.GetLatestBoardListResponseDto;
 import com.nana.boardback.dto.response.board.GetSearchBoardListResponseDto;
 import com.nana.boardback.dto.response.board.GetTop3BoardListResponseDto;
+import com.nana.boardback.dto.response.board.GetUserBoardListResponseDto;
 import com.nana.boardback.dto.response.board.IncreaseViewCountResponseDto;
 import com.nana.boardback.dto.response.board.PatchBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostBoardResponseDto;
 import com.nana.boardback.dto.response.board.PostCommentResponseDto;
 import com.nana.boardback.dto.response.board.PutFavoriteResponseDto;
+import com.nana.boardback.dto.response.user.GetUserResponseDto;
 import com.nana.boardback.entity.BoardEntity;
 import com.nana.boardback.entity.BoardListViewEntity;
 import com.nana.boardback.entity.CommentEntity;
@@ -325,6 +327,21 @@ public class BoardServiceImplement implements BoardService {
         }
         return PostBoardResponseDto.success();
     }
+    @Override
+    public ResponseEntity<? super GetUserBoardListResponseDto> getUserBoardList(String email){
+        List<BoardListViewEntity> boardListViewEntities = new ArrayList<>();
 
+        try{
+            boolean existedUser = userRepository.existsByEmail(email);
+            if(!existedUser){
+                return GetUserBoardListResponseDto.noExistUser();
+            }
+            boardListViewEntities = boardListViewRepository.findByWriterEmailOrderByWriteDatetimeDesc(email);
 
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetUserBoardListResponseDto.success(boardListViewEntities);
+    }
 }
