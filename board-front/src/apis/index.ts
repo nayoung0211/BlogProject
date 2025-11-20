@@ -2,13 +2,13 @@ import {SignInRequestDto, SignUpRequestDto} from "./request/auth";
 import axios from "axios";
 import ResponseDto from "./response/response.dto";
 import {SignInResponseDto, SignUpResponseDto} from "./response/auth";
-import {GetSignInUserResponseDto} from "./response/user";
+import {GetSignInUserResponseDto, GetUserResponseDto} from "./response/user";
 import {PatchBoardRequestDTO, PostBoardRequestDTO, PostCommentRequestDto} from "./request/board";
 import {
   DeleteBoardResponseDto,
   GetBoardResponseDTO, GetCommentListResponseDto,
   GetFavoriteListResponseDTO, GetLatestBoardListResponseDto, GetSearchBoardListResponseDto,
-  GetTop3BoardListResponseDto, PatchBoardResponseDTO,
+  GetTop3BoardListResponseDto, GetUserBoardListResponseDTO, PatchBoardResponseDTO,
   PostBoardResponseDTO
 } from "./response/board";
 import IncreaseViewCountResponseDto from "./response/board/increase-view-count.response.dto";
@@ -72,6 +72,26 @@ const PATCH_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/$
 const GET_LATEST_BOARD_LIST_URL = () => `${API_DOMAIN}/board/latest-list`;
 const GET_TOP_3_BOARD_LIST_URL = () => `${API_DOMAIN}/board/top-3`;
 const GET_SEARCH_BOARD_LIST_URL = (searchWord: string,preSearchWord: string | null) => `${API_DOMAIN}/board/search-list/${searchWord}${preSearchWord ? '/'+preSearchWord : ''}`;
+const GET_USER_BOARD_LIST_URL = (email: string) => `${API_DOMAIN}/board/user-board-list/${email}`;
+
+
+export const getUserBoardListRequest = async (email: string) =>{
+  const result = await axios.get(GET_USER_BOARD_LIST_URL(email))
+  .then(response=>{
+    const responseBody: GetUserBoardListResponseDTO = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  });
+  return result;
+}
+
+
+
+
 
 export const getBoardRequest = async (boardNumber: number | string)=>{
   const result = await axios.get(GET_BOARD_URL(boardNumber))
@@ -274,8 +294,28 @@ export const getRelationListRequest = async (searchWord: string) =>{
   return result;
 }
 
-
+const GET_USER_URL = (email: string) => `${API_DOMAIN}/user/${email}`;
 const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/user`;
+const PATCH_NICKNAME_URL = () => `${API_DOMAIN}/user/nickname`;
+const PATCH_PROFILE_IMAGE_URL = () => `${API_DOMAIN}/user/profile-image`;
+
+export const getUserRequest = async (email: string) =>{
+  const result = await axios.get(GET_USER_URL(email))
+  .then(response => {
+    const responseBody: GetUserResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+}
+
+export const patchNicknameRequest = async () =>{
+
+}
 
 export const getSignInUserRequest = async (accessToken: string) => {
   try {

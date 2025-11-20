@@ -1,12 +1,21 @@
 import React, {ChangeEvent, useEffect, useRef, useState} from "react";
 import './style.css';
 import defaultProfileImage from 'assets/image/default-profile-image.png'
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import {BoardListItem} from "../../types/interface";
+import {latestBoardListMock} from "../../mocks";
+import BoardItem from "../../components/BoardItem";
+import {BOARD_PATH, BOARD_WRITE_PATH, USER_PATH} from "../../constants";
+import {useLoginUserStore} from "../../stores";
 
 export default function User() {
 
   const { userEmail } = useParams();
-  const [isMyPage,setMyPage] = useState<boolean>(true);
+  //로그인 유저 상태
+  const { loginUser } = useLoginUserStore();
+  const [isMyPage,setMyPage] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   //상단 컴포넌트
   const UserTop = () =>{
@@ -93,22 +102,34 @@ export default function User() {
   //하단 컴포넌트
   const UserBottom = () =>{
 
-    const [count,setCount] = useState<number>(0);
+    const [count,setCount] = useState<number>(2);
+    const [userBoardList,setUserBoardList] = useState<BoardListItem[]>([]);
+
+    const onSideCardClick = () =>{
+      if(isMyPage) navigate(BOARD_PATH()+'/'+BOARD_WRITE_PATH());
+      else if(loginUser){
+        navigate(USER_PATH(loginUser.email));
+      }
+    }
+
+    useEffect(() => {
+      setUserBoardList(latestBoardListMock);
+    }, [userEmail]);
 
     //하단 컴포넌트
     return (
         <div id='user-bottom-wrapper'>
           <div className='user-bottom-container'>
-            <div className='user-bottom-title'>{isMyPage ? '내 게시물 ' : '게시물 '}<span className='emphasis'>{0}</span></div>
+            <div className='user-bottom-title'>{isMyPage ? '내 게시물 ' : '게시물 '}<span className='emphasis'>{count}</span></div>
             <div className='user-bottom-contents-box'>
               {count === 0?
                   <div className='user-bottom-contents-nothing'>{'게시물이 없습니다.'}</div> :
                   <div className='user-bottom-contents'>
-
+                    {userBoardList.map(item=><BoardItem boardListItem = {item}/>)}
                   </div>
               }
               <div className='user-bottom-side-box'>
-                <div className='user-bottom-side-card'>
+                <div className='user-bottom-side-card' onClick={onSideCardClick}>
                   <div className='user-bottom-side-container'>
                     {isMyPage ?
                         <>
@@ -128,12 +149,11 @@ export default function User() {
                 </div>
               </div>
             </div>
-            <div className='user-bottom-paagination-box'></div>
+            <div className='user-bottom-pagination-box'></div>
           </div>
         </div>
     );
   };
-
 
   return (
      <>
