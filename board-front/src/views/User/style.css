@@ -1,0 +1,93 @@
+#user-top-wrapper{
+  padding: 40px 0 45px;
+  display: flex;
+  justify-content: center;
+}
+.user-top-container{
+  width: 1200px;
+  min-width: 1200px;
+
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.user-top-my-profile-image-box{
+  width: 120px;
+  height: 120px;
+
+  border-radius: 50%;
+  background-color: lightgray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+}
+.user-top-profile-image{
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+}
+.user-top-profile-image-box{
+  width: 120px;
+  height: 120px;
+
+  border-radius: 50%;
+  background-color: lightgray;
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.user-top-info-box{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.user-top-info-nickname-box{
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+.user-top-info-nickname{
+  color: #ff4f79;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 140%;
+}
+.user-top-info-email{
+  color: #ff8fa3;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 140%;
+}
+.user-top-info-nickname-input{
+  border: none;
+  outline: none;
+  background: none;
+  padding: 0;
+  display: inline-block;
+
+  padding-block: 0px;
+  padding-inline: 0px;
+
+  color: #ff8fa3;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 140%;
+}
+
+ #user-bottom-wrapper{
+   padding: 10px 0;
+
+   display: flex;
+   justify-content: center;
+
+   background-color: #fbeef3;
+ }

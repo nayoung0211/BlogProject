@@ -111,6 +111,22 @@
   align-items: center;
   justify-content: center;
 }
+.icon-box-small{
+  width: 16px;
+  height: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-box-large{
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .icon-button{
   border-radius: 50% 50%;
@@ -198,4 +214,9 @@
 .edit-icon{
   background-image: url(assets/image/edit-light.png);
 }
-
+.image-box-white-icon{
+  background-image: url(assets/image/image-box-white-light.png);
+}
+.arrow-right-icon{
+  background-image: url(assets/image/arrow-right.png);
+}

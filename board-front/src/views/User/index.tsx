@@ -1,48 +1,86 @@
-import React, {useEffect, useState} from "react";
+import React, {ChangeEvent, useEffect, useRef, useState} from "react";
 import './style.css';
-import {User} from "../../types/interface";
 import defaultProfileImage from 'assets/image/default-profile-image.png'
 import {useParams} from "react-router-dom";
 
-export default function UserPage() {
-
-  //마이페이지 여부 상태
-  const [isMyPage,setMyPage] = useState<boolean>(true);
-  //user 정보 상태
-  const [user,setUser] = useState<User | null>(null);
+export default function User() {
 
   const { userEmail } = useParams();
-
-  //email path variable 변경시 실행할 함수
-  useEffect(() => {
-    if(!userEmail) return;
-    setUser({email: 'email@email.com',nickname: '나영',profileImage:defaultProfileImage})
-  },[userEmail]);
+  const [isMyPage,setMyPage] = useState<boolean>(true);
 
   //상단 컴포넌트
-  if(!user) return (<></>);
   const UserTop = () =>{
+    //이미지 파일 인풋 참조 상태
+    const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+    //닉네임 변경 여부 상태
+    const [isNicknameChange,setNicknameChange] = useState<boolean>(false);
+
+    const [nickname,setNickname] = useState<string>('');
+
+    const [changeNickname,setChangeNickname] = useState<string>('');
+
+    const [profileImage,setProfileImage] = useState<string | null>(null);
+
+    const onProfileBoxClick = () =>{
+      if(!isMyPage) return;
+      if(!imageInputRef.current) return;
+      imageInputRef.current.click();
+    }
+
+    const onNicknameEditButtonClick = () =>{
+      setChangeNickname(nickname);
+      setNicknameChange(!isNicknameChange);
+    }
+    const onProfileImageChange = (event: ChangeEvent<HTMLInputElement>) =>{
+      if(!event.target.files || !event.target.files.length) return;
+      const file = event.target.files[0];
+      const data = new FormData();
+      data.append('file', file);
+    };
+    //닉네임 변경
+    const onNicknameChange = (event: ChangeEvent<HTMLInputElement>) =>{
+      const {value} = event.target;
+      setChangeNickname(value);
+    }
+    //email path variable 변경시 실행할 함수
+    useEffect(() => {
+
+      if(!userEmail) return;
+      setNickname('nana');
+      setProfileImage(defaultProfileImage);
+    },[userEmail]);
+
+
     //상단 컴포넌트
     return (
         <div id='user-top-wrapper'>
           <div className='user-top-container'>
             {isMyPage ?
-                <div className='user-top-my-profile-image-box'>
-                  <div className='user-top-profile-image' style={{backgroundImage : `url(${user.profileImage ? user.profileImage : defaultProfileImage})`}}></div>
-                  <input ref={} type='file' accept='image/*' style={{display: 'none'}}/>
+                <div className='user-top-my-profile-image-box' onClick={onProfileBoxClick}>
+                  {profileImage !== null ?
+                  <div className='user-top-profile-image' style={{backgroundImage : `url(${profileImage})`}}></div> :
+                        <div className='icon-box-large'>
+                          <div className='icon image-box-white-icon'></div>
+                        </div>
+                  }
+                  <input ref={imageInputRef} type='file' accept='image/*' style={{display: 'none'}} onChange={onProfileImageChange}/>
                 </div> :
-                <div className='user-top-profile-image-box' style={{backgroundImage : `url(${user.profileImage ? user.profileImage : defaultProfileImage})`}}></div>
+                <div className='user-top-profile-image-box' style={{backgroundImage : `url(${profileImage})`}}></div>
             }
             <div className='user-top-info-box'>
               <div className='user-top-info-nickname-box'>
                 {isMyPage ?
                 <>
-                <div className='user-top-info-nickname'>{'나영'}</div>
-                <div className='icon-button'>
+                {isNicknameChange ?
+                    <input className='user-top-info-nickname-input' type='text' size={nickname.length+2} value={changeNickname} onChange={onNicknameChange}/> :
+                    <div className='user-top-info-nickname'>{nickname}</div>
+                }
+                <div className='icon-button' onClick={onNicknameEditButtonClick}>
                   <div className='icon edit-icon'></div>
                 </div>
                 </>:
-                    <div className='user-top-info-nickname'>{'나영'}</div>
+                    <div className='user-top-info-nickname'>{nickname}</div>
                 }
               </div>
               <div className='user-top-info-email'>{'email@email.com'}</div>
@@ -54,9 +92,45 @@ export default function UserPage() {
 
   //하단 컴포넌트
   const UserBottom = () =>{
+
+    const [count,setCount] = useState<number>(0);
+
     //하단 컴포넌트
     return (
-        <div></div>
+        <div id='user-bottom-wrapper'>
+          <div className='user-bottom-container'>
+            <div className='user-bottom-title'>{isMyPage ? '내 게시물 ' : '게시물 '}<span className='emphasis'>{0}</span></div>
+            <div className='user-bottom-contents-box'>
+              {count === 0?
+                  <div className='user-bottom-contents-nothing'>{'게시물이 없습니다.'}</div> :
+                  <div className='user-bottom-contents'>
+
+                  </div>
+              }
+              <div className='user-bottom-side-box'>
+                <div className='user-bottom-side-card'>
+                  <div className='user-bottom-side-container'>
+                    {isMyPage ?
+                        <>
+                    <div className='icon-box'>
+                      <div className='icon edit-icon'></div>
+                    </div>
+                        <div className='user-bottom-side-text'>{'글쓰기'}</div>
+                    </>:
+                        <>
+                          <div className='user-bottom-side-text'>{'내 게시물로 가기'}</div>
+                          <div className='icon-box'>
+                            <div className='icon arrow-right-icon'></div>
+                          </div>
+                        </>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='user-bottom-paagination-box'></div>
+          </div>
+        </div>
     );
   };
 
