@@ -1,75 +1,96 @@
 import React, { useCallback, useState } from "react";
-import Cropper, { Area } from "react-easy-crop";
+import ReactCrop, { Crop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import "./style.css"; // style.css가 같은 폴더 안에 있다고 가정
 
 interface Props {
-  image: string; // 미리보기용 base64 이미지
+  image: string; // 여기서 src -> image로 변경
   onCancel: () => void;
-  onComplete: (croppedImage: Blob) => void;
+  onComplete: (blob: Blob) => void;
 }
 
 const CropImageModal: React.FC<Props> = ({ image, onCancel, onComplete }) => {
-  const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState<number>(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  // Crop 상태에는 aspect 제거
+  const [crop, setCrop] = useState<Crop>({
+    unit: "%",
+    x: 10,
+    y: 10,
+    width: 80,
+    height: 80,
+  });
 
-  const onCropComplete = useCallback((_: Area, areaPixels: Area) => {
-    setCroppedAreaPixels(areaPixels);
+  const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
+
+  // 크롭 완료 시 잘린 영역 픽셀 저장
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Crop | null>(null);
+
+  const onCropComplete = useCallback((crop: Crop) => {
+    setCroppedAreaPixels(crop);
   }, []);
 
-  const createImage = (url: string): Promise<HTMLImageElement> =>
-      new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = (error) => reject(error);
-        image.src = url;
-      });
+  // Canvas로 실제 Blob 만들기
+  const getCroppedImg = useCallback(async (): Promise<Blob | null> => {
+    if (!imageRef || !croppedAreaPixels) return null;
 
-  const getCroppedImg = async (): Promise<Blob> => {
-    if (!croppedAreaPixels) throw new Error("No crop area!");
-
-    const img = await createImage(image);
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d")!;
+    const scaleX = imageRef.naturalWidth / imageRef.width;
+    const scaleY = imageRef.naturalHeight / imageRef.height;
 
-    const { width, height, x, y } = croppedAreaPixels;
+    const { x = 0, y = 0, width = 0, height = 0 } = croppedAreaPixels;
 
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = width * scaleX;
+    canvas.height = height * scaleY;
 
-    ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.drawImage(
+        imageRef,
+        x * scaleX,
+        y * scaleY,
+        width * scaleX,
+        height * scaleY,
+        0,
+        0,
+        width * scaleX,
+        height * scaleY
+    );
 
     return new Promise<Blob>((resolve) => {
       canvas.toBlob((blob) => {
-        resolve(blob!);
+        if (blob) resolve(blob);
       }, "image/png");
     });
-  };
+  }, [imageRef, croppedAreaPixels]);
 
-  const onConfirm = async () => {
-    const croppedBlob = await getCroppedImg();
-    onComplete(croppedBlob);
+  const handleComplete = async () => {
+    const blob = await getCroppedImg();
+    if (blob) onComplete(blob);
   };
 
   return (
-      <div className="crop-modal">
-      <div className="crop-container">
-      <Cropper
-          image={image}
-  crop={crop}
-  zoom={zoom}
-  aspect={1} // ★ 정사각형 고정
-  onCropChange={setCrop}
-  onCropComplete={onCropComplete}
-  onZoomChange={setZoom}
-  />
-  </div>
+      <div className="crop-modal-backdrop">
+        <div className="crop-modal">
+          <ReactCrop
+              crop={crop}
+              onChange={setCrop}
+              onComplete={onCropComplete}
+              aspect={1} // 정사각형 강제
+          >
+            <img
+                src={image}
+                alt="crop-target"
+                onLoad={(e) => setImageRef(e.currentTarget)}
+            />
+          </ReactCrop>
 
-  <div className="crop-button-box">
-  <button onClick={onCancel}>취소</button>
-      <button onClick={onConfirm}>완료</button>
+          <div className="crop-modal-buttons">
+            <button onClick={onCancel}>취소</button>
+            <button onClick={handleComplete}>완료</button>
+          </div>
+        </div>
       </div>
-      </div>
-);
+  );
 };
 
 export default CropImageModal;
