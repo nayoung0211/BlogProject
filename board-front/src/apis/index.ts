@@ -2,7 +2,11 @@ import {SignInRequestDto, SignUpRequestDto} from "./request/auth";
 import axios from "axios";
 import ResponseDto from "./response/response.dto";
 import {SignInResponseDto, SignUpResponseDto} from "./response/auth";
-import {GetSignInUserResponseDto, GetUserResponseDto} from "./response/user";
+import {
+  GetSignInUserResponseDto,
+  GetUserResponseDto,
+  PatchNicknameResponseDto, PatchProfileImageResponseDto
+} from "./response/user";
 import {PatchBoardRequestDTO, PostBoardRequestDTO, PostCommentRequestDto} from "./request/board";
 import {
   DeleteBoardResponseDto,
@@ -15,6 +19,7 @@ import IncreaseViewCountResponseDto from "./response/board/increase-view-count.r
 import {FavoriteListItem} from "../types/interface";
 import PostCommentResponseDto from "./response/board/post-comment.response.dto";
 import {GetPopularListResponseDto, GetRelatedBoardListResponseDto} from "./response/search";
+import {PatchNicknameRequestDTO, PatchProfileImageRequestDto} from "./request/user";
 
 const DOMAIN = 'http://localhost:4000';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
@@ -313,8 +318,31 @@ export const getUserRequest = async (email: string) =>{
   return result;
 }
 
-export const patchNicknameRequest = async () =>{
-
+export const patchNicknameRequest = async (requestBody: PatchNicknameRequestDTO,accessToken: string) =>{
+  const result = await axios.patch(PATCH_NICKNAME_URL(),requestBody,authorization(accessToken))
+  .then(response => {
+    const responseBody: PatchNicknameResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
+}
+export const patchProfileImageRequest = async (requestBody: PatchProfileImageRequestDto,accessToken: string) =>{
+  const result = await axios.patch(PATCH_PROFILE_IMAGE_URL(),requestBody,authorization(accessToken))
+  .then(response => {
+    const responseBody: PatchProfileImageResponseDto = response.data;
+    return responseBody;
+  })
+  .catch(error => {
+    if(!error.response) return null;
+    const responseBody: ResponseDto = error.response.data;
+    return responseBody;
+  })
+  return result;
 }
 
 export const getSignInUserRequest = async (accessToken: string) => {
