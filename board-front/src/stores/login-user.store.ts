@@ -5,7 +5,7 @@ interface LoginUserStore{
   loginUser: User | null;
   setLoginUser: (loginUser: User) => void;
   resetLoginUser : () => void;
-};
+}
 
 const useLoginUserStore = create<LoginUserStore>(set =>({
   loginUser : null,

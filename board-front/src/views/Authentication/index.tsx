@@ -25,7 +25,7 @@ export default function Authentication() {
     const [passwordIcon,setPasswordIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
     const [error,setError] = useState<boolean>(false);
 
-    const signInResponse = (responseBody: SignInRequestDto | ResponseDto | null) => {
+    const signInResponse = (responseBody: SignInResponseDto | ResponseDto | null) => {
       if (!responseBody) {
         alert('network error');
         return;
@@ -176,7 +176,7 @@ export default function Authentication() {
         setTelNumberErrorMessage('Duplicated TelNumber')
       }
       if(code === 'VF'){
-        alert('Enter everthing')
+        alert('Enter everything')
       }
       if(code === 'DBE'){
         alert('Database Error')
@@ -332,7 +332,7 @@ export default function Authentication() {
       if(!agreedPersonal){
         setAgreedError(true);
       }
-      if(!hasNickname || !isTelNumberPattern || !agreedPersonal) return;
+      if(!hasNickname || !isTelNumberPattern || !agreedPersonal || !address) return;
 
       const requestBody:SignUpRequestDto = {
         email,password,nickname,telNumber,address,addressDetail,agreedPersonal

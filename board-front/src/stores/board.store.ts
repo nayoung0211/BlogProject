@@ -8,7 +8,7 @@ interface BoardStore {
   setContent : (content : string) => void;
   setBoardImageFileList : (boardImageFileList : File[]) => void;
   resetBoard: () => void;
-};
+}
 
 const useBoardStore = create<BoardStore>(set => ({
   title : '',
